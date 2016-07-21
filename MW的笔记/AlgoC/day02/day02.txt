@@ -1,0 +1,9 @@
+struct A {
+  int x;
+  int y;
+  struct A a;
+}; // ERROR !
+
+struct A aa; // sizeof (struct A) = sizeof (int) + sizeof (int) + sizeof (struct A)
+int x;
+double y;
