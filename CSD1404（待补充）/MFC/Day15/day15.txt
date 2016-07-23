@@ -1,0 +1,127 @@
+一 VC访问数据库技术
+   1 ODBC-Open Database Connectivity，微软开放式
+   数据互联。使用相同的这组API函数访问和操作不同
+   类型的数据库，前提是在访问前，需要将数据库设置
+   为ODBC数据源。MFC将这组函数封装，形成了ODBC类
+   只能访问关系型数据库。
+   2 DAO-基于ODBC的，目前已经淘汰
+   3 OLE DB-基于COM组件技术的，提供了一组用户访问
+   和操作数据库的接口。功能和性能都有了很大提高，
+   既能访问关系型又能够访问非关系型数据库。缺点是
+   学习门槛高，抽象复杂。
+   4 ADO-基于OLE DB之上，又做了封装，提供了更加简单
+   的接口。逐渐的流行起来，成为最广泛使用的技术之一。
+   5 ADO.NET-基于.NET平台，VB、VC、C#都可以使用的
+   一组访问数据库的类。
+二 使用ODBC类访问数据库
+   1 相关类
+   CDatabase类-功能主要是连接和关闭数据库，另外，
+   提供了执行Sql语句的功能。
+   CRecordset类-功能主要是操作数据表的数据。
+   头文件 #include <afxdb.h>
+   2 使用
+   2.1 设置ODBC数据源
+   开始-》设置-》控制面板-》管理工具-》数据源ODBC
+   2.2 打开数据源
+      CDatabase::Open()
+   2.3 执行Sql语句
+      CDatabase::ExecuteSQL()
+   2.4 获取字段的数量
+      CRecordset::GetODBCFieldCount()
+   2.5 获取字段的标题
+      CRecordset::GetODBCFieldInfo
+   2.6 获取字段的值
+      CRecordset::GetFieldValue
+   2.7 记录集的指针操作
+      CRecordset::IsEOF
+      CRecordset::MoveNext
+   2.8 关闭记录集
+      CRecordset::Close
+   2.9 关闭数据库
+      CDatabase::Close
+三 使用ADO访问数据库
+   ADO是独立于MFC之外一个单独的组件。所以在使用
+   ADO时，我们需要将ADO组件导入到当前的工程。
+   1 导入ADO组件  (msado15.dll)
+   #import "组件的路径" no_namespace rename("EOF","adoEOF")
+   "C:\Program Files\Common Files\System\ado\msado15.dll"
+   在工程的stdafx.h中添加以上导入语句，编译工程，生成
+   msado15.tlh和msado15.tli两个文件。
+   2 使用ADO组件前，初始化COM库。
+     CoInitialize(NULL);-初始化COM库
+     CoUninitialize();-卸载COM库
+   3 在MFC中使用ADO组件，需要C++数据类型与COM数据
+     类型频繁转换，ADO组件的使用变得非常的繁琐。
+     在公司的实际开发，将ADO组件的每个接口封装成
+     c++的类，接口函数封装成类的成员函数，形成ADO
+     组件的C++的封装类。
+   4 接口的介绍
+     4.1 Connection接口-功能与CDatabase类似。
+         使用CAdoDatabase类封装该接口。
+         
+     4.2 Recordset接口-功能与CRecordset类似。
+         使用CAdoRecordset类封装该接口。
+   5 Connection接口的使用
+     5.1 连接数据库
+     Open(
+     _bstr_t connectionString,//数据库连接字符串
+     _bstr_t UserID,//数据库的登录名称
+     _bstr_t Password,//密码
+     long option//数据库的连接方式，可以赋值为-1，
+                  代表不指定连接方式。
+     );      
+     不同的数据库产品，数据库连接字符串各不相同。
+     即使相同的数据库产品，由于版本不同，连接字
+     符串也可能不同。
+     使用udl文件配置，得到连接字符串。
+   6 Recordset接口的使用
+    6.1 打开表
+    Open ( 
+    const _variant_t & Source,//表名、Sql语句、存储过程名称 
+    const _variant_t & ActiveConnection, //活动连接
+    enum CursorTypeEnum CursorType, //游标类型
+    enum LockTypeEnum LockType, //锁定类型
+    long Options//标识第一个参数，adCmdTable/adCmdText/adCmdStoredProc
+     ); 
+    游标类型
+    enum CursorTypeEnum
+    {
+    adOpenForwardOnly = 0,//单向的静态游标
+    adOpenKeyset = 1,//键集游标，动态游标的一种
+    adOpenDynamic = 2,//动态游标
+    adOpenStatic = 3//静态游标(双向的)
+    }; 
+    记录集的锁定类型
+    enum LockTypeEnum
+    {
+    adLockReadOnly = 1,//只读记录集
+    adLockPessimistic = 2,//悲观锁
+    adLockOptimistic = 3,//乐观锁
+    adLockBatchOptimistic = 4//批处理的乐观锁
+    };
+    6.2 获取字段的相关信息 (Fields)
+    6.2.1 获取字段的数量
+          Fields->GetCount()
+    6.2.2 获取字段标题
+          Fields->GetItem(nIndex)->GetName()
+    6.2.3 获取字段的值
+          Fields->GetItem(nIndex)->Value
+    6.3 记录集的指针操作
+        MoveNext()
+        MovePrevious()
+        MoveFirst()
+        MoveLast()
+        Move(long nNums)
+        IsEOF()
+        IsBOF()
+               
+    
+    
+         
+     
+     
+        
+     
+                                 
+      
+    

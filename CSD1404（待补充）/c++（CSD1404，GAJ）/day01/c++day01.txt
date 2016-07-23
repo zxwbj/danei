@@ -1,0 +1,116 @@
+一.c++ 的历史
+   80 年代   本贾尼.斯特劳斯特卢普 
+   83年 正式命名为c++
+   87年 gnu 制定了c++ 标准
+   92年 mic  和 IBM  分别制定了c++标准
+   98年 ISO  制定了c++ 标准  -std=c++98 
+   03年 ISO  制定了c++ 标准  -std=c++03
+   11年 ISO                  -std=c++0x
+
+二.c++ 和 c 联系 和 区别
+   联系:
+   c是构建c++ 基础 c++几乎完全的兼容c
+   区别:
+   c++ 比c 对类型检查要严格
+   c++ 是面向对象的  (以类的方式分析 组织代码)
+   c++ 支持运算符重载(一种特殊的函数表现形式)
+   c++ 支持异常 (一种新的错误处理方式)
+   c++ 支持泛型和模板 (类型通用编程 )
+三.第一个c++ 程序
+   3.1 源文件 
+       以.cpp结尾 (推荐)
+       可以以 .c  .C  .cc .cxx  .c++
+   3.2 头文件
+       /usr/include/c++/4.6 
+       标准c++ 头文件 一般不再以.h结尾
+       #include <iostream> 
+       #include <string>
+
+       导入标准c头文件  去尾加头
+       #include <stdio.h> ---  #include <cstdio>
+       #include <string.h>     #include <cstring>
+       #include <stdlib.h>     #include <cstdlib>
+ 
+       导入非标准c头文件  原样导入
+       #include <pthread.h>    
+        
+       自己定义的头文件 
+           还是带.h    data.h
+	   #include  "data.h"
+    3.3 输入 输出
+       #include <cstdio>
+       scanf("%d",&age);
+       printf("%d\n" ,age);
+
+       需要指定输出输出的格式 需要对变量输入取地址
+
+       c++的实现是 #include <iostream>
+       cin >> age;
+       cout << age << name << endl; 
+       c++ 的输入输出 会自动识别格式
+    3.4 编译器
+       g++  ***.cpp 
+       gcc  ***.cpp   -lstdc++
+       
+       和gcc 相同的编译器选项
+       -o   输出文件名 
+       -c       编译  
+       -E       预处理 
+       -I       指定头文件的位置 
+       -L       指定库的位置
+       -l       指定库名
+       -S       生成汇编 
+       -std     编译标准
+       -On      优化
+       -g       生成gdb调试信息
+    3.5 using  namespace  std;
+       使用标准的命名空间 std
+
+    3.6 使用c语言的输入输出  在c++ 程序中 把第一个程序
+重写一下
+    
+
+四.命名空间
+   4.1 概念 和 作用
+   把一组相关的对象(函数 变量 类型) 组织到一起
+   然后给这个逻辑结构起一个名字叫命名空间名.
+
+   作用:
+   按照逻辑划分模块
+   防止命名冲突
+   4.2 命名空间的语法
+   namespace 空间名{
+       /* 可以函数声明 可以函数定义*/
+       void  foo();
+       /* 变量的定义 */
+       int   a=12;
+       // extern   int  b;
+   }
+
+   namespace  gg{
+       void   foo();
+       int    a=12;
+   }
+   
+   namespace  gg{
+       void   foo(){
+           cout << a << endl;    
+       }
+   }
+
+   4.3 如何使用?
+   需要在命名空间中的数据前加 命名空间名::
+   使用 using 声明
+       using  命名空间名::数据名;
+       如果有冲突 回到第一种解决方案
+   使用 using  namespace  指令
+       using  namespace 命名空间名;
+       
+   4.4 命名空间嵌套
+   namespace  ns1{
+       // 数据
+       namespace ns2{
+           // 数据
+       }
+   }
+   4.5 无名命名空间

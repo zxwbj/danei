@@ -1,0 +1,21 @@
+
+VC显示行号插件说明
+---------------------------------------
+
+1. 如果你的VC安装在C盘，请拷贝文件VC6LineNumberAddin.dll到如下目录：
+
+C:\Program Files\Microsoft Visual Studio\Common\MSDev98\AddIns
+
+2. 注册
+
+双击VC6LineNumberAddin.reg进行注册。
+
+3. 启用
+
+打开vc6，菜单栏：Tools -> customize -> Add-ins and Macro Files
+选中VC6LineNumber Developer Studio Add-in
+
+
+hi.baidu.com/codefish
+
+2008-12-5

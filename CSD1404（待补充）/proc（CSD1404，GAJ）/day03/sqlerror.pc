@@ -1,0 +1,34 @@
+#include <stdio.h>
+exec sql  include sqlca;
+void  proceeError(){
+    printf("process error\n");
+		printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+}
+void  processNotFound(){
+    printf("process not found!\n");
+}
+int main(){
+    exec sql begin declare section;
+		    char userpasswd[30]="openlab/open123";
+		    char var_name[30];
+		exec sql end   declare section;
+    exec sql whenever  notfound  
+				do processNotFound();
+    exec sql whenever sqlerror 
+				do proceeError();
+		exec sql connect:userpasswd;
+		exec sql select first_name 
+				into :var_name 
+				from  s_emp where id>1;
+    printf("var_name=%s\n",var_name);
+		exec sql drop table  s_emp;
+		exec sql select first_name 
+				into :var_name 
+				from  s_emp where id=-1;
+    if(sqlca.sqlcode){
+		    printf("this sqlcode !=0 \n");
+		}    
+		printf("app continue!\n");
+    exec sql commit work release;
+}
+

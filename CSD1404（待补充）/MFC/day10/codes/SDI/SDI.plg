@@ -1,0 +1,39 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: SDI - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP160.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Debug/SDI.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ   /c 
+"E:\csd1404\day10\codes\SDI\MainFrm.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP160.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP161.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/SDI.pdb" /debug /machine:I386 /out:"Debug/SDI.exe" /pdbtype:sept 
+.\Debug\SDI.obj
+.\Debug\StdAfx.obj
+.\Debug\MainFrm.obj
+.\Debug\SDIDoc.obj
+.\Debug\SDIView.obj
+.\Debug\SDI.res
+.\Debug\DlgModel.obj
+.\Debug\DlgModeless.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP161.tmp"
+<h3>Output Window</h3>
+Compiling...
+MainFrm.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+SDI.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,98 @@
+TranslateAccelerator( hWnd, hAccel, &nMsg )
+{
+   if( nMsg.message != WM_KEYDOWN....)
+       return 0;
+   通过nMsg.wParam(虚拟键码)可以获知哪个按键被按下(CTRL+M)
+
+   拿着CTRL+M到hAccel(加速键表)中匹配查找
+   if(没找到)
+      return 0；
+   if（找到）
+   {
+      PostMessage( nMsg.hwnd, WM_COMMAND,
+                                 ID_NEW|||1, NULL );
+      return 13456；
+   }  
+}
+
+
+
+
+
+HDC hdc = BeginPaint( hWnd,....);
+
+TextOut( hdc, 100, 100, "hello", 5 );
+Ellipse( hdc, 100, 100, 150, 150 );
+
+EndPaint
+
+
+
+
+//移动 窗口的当前点 到 它指定的点, 并将 它指定的点 作为 
+//  窗口的当前点
+BOOL MoveToEx(
+  HDC hdc,          // DC句柄
+  int X,            // 指定的x坐标  
+  int Y,            // 指定的y坐标   
+  LPPOINT lpPoint   // 原来坐标可以为NULL
+);
+//从窗口的当前点 到 它指定的点 绘制一条直线，
+//并将 它指定的点 做为窗口的当前点
+BOOL LineTo(
+  HDC hdc,    // DC句柄
+  int nXEnd,  // 指定点的X坐标
+  int nYEnd   // 指定点的Y坐标
+);
+
+//绘制 直角矩形
+BOOL Rectangle(
+  HDC hdc,         // DC句柄
+  int nLeftRect,   // 左上角X坐标
+  int nTopRect,    // 左上角Y坐标
+  int nRightRect,  // 右下角X坐标
+  int nBottomRect  //右下角Y坐标
+);
+//绘制圆角矩形
+BOOL RoundRect(
+  HDC hdc,         // DC句柄
+  int nLeftRect,   // 左上角X坐标
+  int nTopRect,    // 左上角Y坐标
+  int nRightRect,  // 右下角X坐标
+  int nBottomRect, //右下角Y坐标
+  int nWidth,      // 弧线的宽
+  int nHeight      // 弧线的高
+);
+//绘制弧线
+BOOL Arc(
+  HDC hdc,         // DC句柄
+  int nLeftRect,   // 左上角X坐标
+  int nTopRect,    // 左上角Y坐标
+  int nRightRect,  // 右下角X坐标
+  int nBottomRect, // 右下角Y坐标
+  int nXStartArc,  // 起点X坐标
+  int nYStartArc,  // 起点Y坐标
+  int nXEndArc,    // 终点X坐标
+  int nYEndArc     // 终点Y坐标
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

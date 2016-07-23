@@ -1,0 +1,61 @@
+
+mov       ecx,dword ptr [g_nValue (00427c48)]
+add        ecx,1
+mov       dword ptr [g_nValue (00427c48)],ecx
+
+ecx = g_nValue;
+ecx = ecx + 1;
+g_nValue=ecx;
+WaitForSingleObject( g_hEvent, INFINITE )
+{
+   ........
+   阻塞代码
+   
+   判断g_hEvent是否为事件句柄
+   if(是事件句柄)
+   {
+       通过事件句柄 查看事件的复位方式
+       if(手动)
+       {
+          //什么都不干
+       }else if(自动)
+        {
+            ResetEvent( g_hEvent );
+        }
+   }
+}
+
+this
+union
+->*    .*
+虚拟 / 多态
+静态成员
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,110 @@
+
+
+九.调整值
+   QSlider   滑块类   
+       找一个信号函数 可以代表滑动
+       void   valueChanged(int val);   
+   QSpinBox  微调框类 
+       找一个槽函数 可以代表赋值
+       void   setValue(int val);
+   在连接带参数的信号和槽时  需要指定参数的
+   类型。
+       
+
+十.使用c++ 方式编写qt的代码
+   1.头文件 和 实现文件 分离实现
+   2.通过继承 让类的对象 可以显示在屏幕上
+     继承QWidget 或者子类 QMainWindow 
+     QDialog
+   3.界面类中的组件 都作为这个类的成员变量
+   4.如果类中有定义的信号和槽 则需要在头文件
+     中出现一个宏 Q_OBJECT
+
+十一.信号 和 槽 
+<1> 信号和槽机制是qt编程的基础，
+    可以使互不相干的对象绑定在一起
+<2> 槽可以和信号连接在一起，这样绑定之后，
+    每当发射(触发)这个信号的时候，就会自动
+    的调用这个槽。
+<3> 如果在类中要定义信号 槽 必须声明宏 
+     Q_OBJECT。
+<4> 定义信号   public:signals: 
+    定义槽函数 public slots:
+<5> 使用connect进行连接:
+connect(sender,SIGNAL(signal),
+    receiver,SLOT(slot));
+<6>连接可以被移除  （了解）
+disconnect(lcd,SIGNAL(overflow()),
+this,SLOT(handleMathError()));
+
+补充：
+<1> 一个信号可以连接多个槽
+   connect(a,SIGNAL(siga()),b,SLOT(slotb()));
+   connect(a,SIGNAL(siga()),c,SLOT(slotc()));
+<2> 多个信号可以连接一个槽
+   connect(a,SIGNAL(siga()),b,SLOT(slotb()));
+   connect(c,SIGNAL(sigc()),b,SLOT(slotb()));
+<3> 一个信号可以与另外一个信号相连接
+当发射第一个信号的时候，也会发射第二个信号。
+   connect(a,SIGNAL(siga()),b,SIGNAL(sigb()));
+   connect(b,SIGNAL(sigb()),c,SLOT(slotc()));
+<4>当删除对象的时候，Qt会自动的移除和这个对
+   象相关的所有连接。
+
+信号和槽连接时的限制:
+<1> 要把信号成功的连接到槽(或者信号)，
+   他们的参数必须要有相同的顺序和相同的类型
+   (信号函数参数 可以多于槽函数 
+   一般推荐设计时个数也相同 )
+<2> 在使用connect函数的时候信号和槽函数不能
+    包含参数的名字。
+   
+如何任意信号 连接到任意的槽?
+a.通过自定义槽函数 
+  QPushButton     clicked();
+  QLabel          setText(QString)
+
+b.通过自定义的槽函数   结合自定义信号
+  (自定义信号 把线程中的数据 传出线程 )
+  QPushButton     clicked();
+                  getCurrTime();
+		  (发射了自定义信号 
+		   mySig(QString))
+
+                  mySig(QString)  
+  QLabel          setText(QString) 
+
+十二. 设计器的使用 
+(可见即所得的 界面编辑器 )
+从窗口部件盒中拖拽组件 
+使用鼠标可以改变组件的大小和位置
+鼠标选中组件之后 使用方向键改变组件位置
+    每次改变 10px
+ctrl+方向键   每次1px
+
+方向键 + shift  改变组件的大小 每次 10px
+
+属性编辑器 改变组件的属性
+    字体  背景  名字 
+
+对象查看器 
+    对象和对象之间的组织关系
+    对象的名字
+    对象的类型 
+十三.如何使用 UI文件
+ 1.使用uic转换工具 把ui文件 变成 .h文件
+   uic   ***.ui   -o ***.h 
+ 2.界面文件 转换成了头文件 jfq.h
+
+ 3.自定义头文件 使用jfq.h
+    
+ 4.写实现文件 
+
+ 5.写测试文件 
+
+
+
+
+
+
+

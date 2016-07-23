@@ -1,0 +1,429 @@
+
+
+郭爱军  
+guoaj@tarena.com.cn 
+一.分组函数 
+1.1 分组函数的特点
+   单行函数 就是sql语句影响多少行 就返回多少个
+   结果。
+   组函数的特点就是无论sql语句影响多少行 都
+   返回一个结果。
+1.2 常见的组函数
+   count   统计数据个数
+   max     统计最大值
+   min     统计最小值
+   sum     统计和
+   avg     统计平均值
+
+1.3 举例
+   统计工资大于1500的员工人数
+   select  count(id) from s_emp 
+       where salary>1500;
+   SQL>edit
+   立即进入 一个标准的vi编辑器 
+   保存退出后使用 / 执行编辑好的sql
+   SQL> /
+    
+   select id,count(id) from s_emp 
+       where salary>1500;
+   ERROR at line 1:
+   ORA-00937: not a single-group group function    
+1.4 统计s_emp 表中 工资的最大值  和 工资的最小
+    值。
+   select   max(salary),min(salary) 
+       from s_emp ;
+   统计s_emp 表中 工资的平均值 和 工资的和
+   select  avg(salary),sum(salary) 
+       from  s_emp;
+   select  avg(distinct salary),
+       sum(distinct salary) 
+           from  s_emp;
+1.5 组函数 对 NULL 值的处理方式
+   统计s_emp 表中 提成的个数
+   commission_pct 
+   select count(commission_pct) from s_emp;
+   组函数 对 NULL值的处理方式是忽略的 
+
+二.分组
+  2.1 按照一定的分组标准 把数据分成若干组。
+  2.2 group  by 分组标准
+      按照部门编号分组  统计每个部门的人数
+  select dept_id,count(id)   
+      from  s_emp 
+          group  by dept_id;
+  	  
+  2.3 举例
+  按照部门编号 分组  统计每个部门的平均工资
+  select dept_id,avg(salary)
+      from  s_emp
+          group by  dept_id; 
+
+  按照部门编号分组  统计每个部门的工资和
+  显示工资和大于1500的
+   /* where 对表中行数据进行过滤的 */
+  select dept_id,avg(salary)
+      from  s_emp  where salary>1500
+          group by  dept_id; // logic error 
+  2.4 对统计之后的组数据进行过滤
+      having  
+  select dept_id,avg(salary)
+      from  s_emp
+          group by  dept_id
+	      having  avg(salary)>1500; 
+  按照部门号分组 统计每个部门的人数  显示
+  大于2的部门和人数
+  select dept_id,count(id)
+      from  s_emp 
+          group by  dept_id
+	      having count(id)>2;
+  select dept_id,count(id) empcount
+      from  s_emp  where 1=1 
+          group by  dept_id
+	      having count(id)>2
+	          order by  empcount;
+
+  sql语句的执行顺序?
+     from
+         where 
+	     group by  
+	         having 
+		     select  
+		         order by 
+
+  2.5 按照部门编号 分组 统计每个部门的人数 
+      限制 显示人数大于2的
+      显示部门编号  部门名  部门人数 
+
+      s_emp
+          id 
+	  dept_id 
+      s_dept
+          id
+	  name 
+      	  
+      select e.dept_id,max(d.name),count(e.id)    
+          from  s_emp e,s_dept d
+	      where e.dept_id=d.id
+	          group by dept_id
+		      having count(e.id)>1;
+
+     在分组语句中 select 后的字段 要么是分组
+     标准 要么是经过合适的组函数处理过的。
+      select e.dept_id,d.name,count(e.id)    
+          from  s_emp e,s_dept d
+	      where e.dept_id=d.id
+	          group by dept_id,d.name
+		      having count(e.id)>1;
+
+三.子查询
+   3.1 概念
+   把一个查询的结果  作为另一个查询的基础
+   3.2 子查询可以出现的位置
+   where 之后
+   having 之后
+   from   之后
+   3.3  举例
+   /* 查询出所有的不重复的领导的员工编号 */
+   select  distinct  manager_id from s_emp;
+   /* 找出所有的领导 */
+   select  id,first_name from s_emp 
+       where id in(select  distinct  
+           manager_id from s_emp);
+
+   查询工资大于 first_name 是Carmen工资的员工
+   的信息。
+   select  salary  from s_emp 
+       where first_name='Carmen'; 
+   select  id,first_name,salary
+       from s_emp where salary>
+       (select  salary  from s_emp 
+       where first_name='Carmen');
+   查询 s_emp 表中不是领导的人 
+   列出 id  first_name  
+   /* 使用not in 时注意NULL  */
+   select  id,first_name from s_emp 
+       where id not in(select  distinct  
+           manager_id from s_emp 
+	   where manager_id is not null);
+   找出提成是10 的员工的信息
+   id  first_name commission_pct 
+   select  id,first_name,commission_pct 
+       from  s_emp where commission_pct=10;
+   select  id,first_name,commission_pct 
+       from  s_emp where commission_pct!=10;
+   select  id,first_name,commission_pct 
+       from  s_emp where commission_pct is null;
+
+ 3.4 子查询 用在having 之后
+   显示一些部门相关的信息  显示
+   部门编号  和 部门人数 
+   要求显示人数大于 50部门人数的部门信息
+
+   select  dept_id,count(id)
+       from  s_emp group by dept_id
+           having  count(id)>(select count(id)
+	   from s_emp where dept_id=50);
+
+   求平均工资大于等于50部门平均工资的部门 
+   列出dept_id   和  平均工资
+   select  avg(salary) from s_emp 
+       where dept_id=50;
+   select  dept_id,avg(salary)
+       from s_emp  group by dept_id
+          having avg(salary)>=(select avg(salary) 
+	  from s_emp  where dept_id=50);
+3.5 子查询用在from 之后
+   任何的一个查询语句 都可以看成一张内存表
+   select  id,first_name name,salary
+       from s_emp;
+   select  id,name from (select  id,first_name 
+       name,salary from s_emp) where id>10;
+
+   显示一些部门相关的信息  显示
+   部门编号  和 部门人数 
+   要求显示人数大于 50部门人数的部门信息
+
+   select * from(select dept_id,
+       count(id) empcount
+       from  s_emp group by dept_id)
+       where empcount>(select count(id)
+	   from s_emp where dept_id=50);
+   
+四.建表语句
+   4.1 语法
+   create table   表名(
+       字段名     类型,
+       字段名     类型,
+       字段名     类型
+   );
+
+   SQL   
+   4.2 账户表  account1404
+   ano        varchar2(50)
+   apasswd    varchar2(30)
+   agrade     number(7)
+   aage       number
+   
+   
+   create table  account1404_9527(
+       ano    varchar2(50),
+       apasswd varchar2(30),
+       agrade   number(7),
+       aage     number
+   );
+   drop   table  account1404_9527;
+  4.3 删除表
+  drop   table  表名;
+  drop   table  account1404_9527;
+  4.4 修改表
+  alter  table  
+
+  4.5 举例
+  建立一张订单表  
+  ono    varchar2(50)
+  oname  varchar2(30)
+  odate  date
+  omoney number
+  drop   table  jdorder;
+  create table  jdorder(
+      ono    varchar2(50),
+      oname  varchar2(30),
+      odate  date,
+      omoney number 
+  );
+  
+五.DML(insert  delete  update )
+5.1 增加数据(插入数据)
+   a. insert  into  表名  values(值1,值2,值3);
+   insert into jdorder values('jd00001',
+   'shijiebeimenpiao',sysdate,123456);
+   
+   insert into jdorder values('jd00001',
+   NULL,NULL,123456);
+
+   b.选择性插入
+     insert  into  表名(字段名1,字段名4)  
+     values(值1,值4);
+     没有选择的字段 放入的值就是NULL值
+     insert   into  jdorder(ono,omoney)
+         values('test001',0.01);
+     必须包含 所有的非空字段   
+    drop   table  jdorder2014;
+    create table  jdorder2014(
+      ono    varchar2(50) not null,
+      oname  varchar2(30),
+      odate  date,
+      omoney number 
+    );
+
+     insert   into  jdorder2014(ono,omoney)
+         values('test002',0.01);
+
+5.2  删除数据 
+   delete   from  表名   where 条件;
+   
+  insert   into  jdorder2014(ono,omoney)
+         values('test003',0.03); 
+  delete   from   jdorder2014 
+      where ono='test002';  
+
+5.3 更新数据
+  update  表  set 字段名=值,字段名2=值2 
+      where 条件;
+  update  jdorder2014  set  ono='test005',
+      oname='pingge',omoney=23456
+      where ono='test003';
+
+综合练习:
+保存比赛结果的表
+gid      number
+ganame   varchar2(30)
+gbname   varchar2(30)
+gscore   varchar2(30)
+gdate    date
+
+1  baxi      keldy     3:1   2014-6-13 03:00:00
+2  deguo     xibanjia  4:0   2014-6-14 03:00:00
+3  agenting  yilang    1:0   2014-6-21 00:00:00
+
+把gid 是2 的比分 改成  4:1
+把gid 是1 的比赛时间 改成  2014-6-13 03:01:28
+
+drop   table  gametable;
+create table  gametable(
+    gid      number,
+    ganame   varchar2(30),
+    gbname   varchar2(30),
+    gscore   varchar2(30),
+    gdate    date
+);
+
+insert  into  gametable values
+(1,'baxi','keldy','3:1',
+to_date('2014-6-13 03:00:00',
+'yyyy-mm-dd hh24:mi:ss'));
+
+insert  into  gametable values
+(2,'deguo','xibanjia','4:0',
+to_date('2014-6-14 03:00:00',
+'yyyy-mm-dd hh24:mi:ss'));
+
+insert  into  gametable values
+(3,'agenting','yilang','1:0',
+to_date('2014-6-21 00:00:00',
+'yyyy-mm-dd hh24:mi:ss'));
+
+commit;
+
+update  gametable set  gscore='4:1' 
+     where gid=2;
+update  gametable set  
+     gdate=gdate+88/(24*60*60) where gid=1;
+
+update  gametable set   
+     gdate=to_date('2014-6-13 03:01:28',
+     'yyyy-mm-dd hh24:mi:ss')
+     where  gid=1;
+commit;
+select to_char(gdate,'yyyy-mm-dd hh24:mi:ss')
+    from  gametable where gid=1;
+
+六.数据库中的事务 (transaction)
+create table  account_bdl(
+    aname  varchar2(30),
+    ano    varchar2(30),
+    amoney number
+);
+insert  into  account_bdl values('xiaoqiang',
+'A',10001);
+
+6.1 事务的四大特性
+原子性:事务中的语句 是一个不可分割的整体
+       要么一起成功 要么一起失败。
+    转账:
+    update  account  set money=money-5000
+        where  ano='A';
+    a=0;
+    update  account  set money=money+5000
+        where  ano='B';
+    b=0;
+    if(a==0 && b==0){
+        commit;    
+    }else{
+        rollback;
+    }
+   
+隔离性:
+   drop  table   account_bdl;
+   create table  account_bdl(
+    aname  varchar2(30),
+    ano    varchar2(30) primary key,
+    amoney number
+   );
+insert  into  account_bdl values('xiaoqiang',
+'A',10001); 
+commit;  提交 把 数据写入物理磁盘
+rollback;数据在没有提交以前 可以撤销操作。
+insert  into  account_bdl values('daqiang',
+'B',30001);
+一个事务操作的数据  在没有提交以前 对另一个事务
+而言不能发现数据的变化。
+update  account_bdl set amoney=1
+    where ano='B';
+一致性:数据变化要保持一致
+    
+持久性:
+    
+
+6.2 保存点
+    /* 打破一些限制 
+       允许部分成功 和 部分失败 */
+    savepoint   
+    
+    发短信  sa
+     savepoint  a;
+    扣钱    sb
+     savepoint  b;
+    对象收到短信  sc
+     savepoint  c;
+    记录发送状态  sd
+
+    if(sc ){
+        rollback to b;
+    }
+    commit;
+    create table  account_bdla(
+    aname  varchar2(30),
+    ano    varchar2(30) primary key,
+    amoney number
+   ); 
+    insert  into  account_bdla 
+        values('a','noa',1000);
+    savepoint  a;
+    insert  into  account_bdla 
+        values('b','nob',1001);
+    savepoint  b;
+    insert  into  account_bdla 
+        values('c','noc',1002);
+    rollback to b;
+    commit;
+
+ select dept_id,avg(salary) from s_emp
+ where  dept_id!=50
+ group by dept_id having 
+ avg(salary)>=(select avg(salary) 
+ from s_emp where dept_id = 50);
+
+
+select * from (select dept_id,avg(salary) 
+     avgmoney from s_emp group by dept_id)
+     where avgmoney>
+     (select avg(salary) from s_emp
+     where dept_id=50);
+
+按照入职排序 显示 id  first_name start_date
+select  id,first_name,to_char(start_date,
+    'yyyy-mm-dd hh24:mi:ss') 
+    from  s_emp  order by  start_date;
+
+

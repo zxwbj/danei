@@ -1,0 +1,230 @@
+
+六.宿主变量 
+   6.1 既能在sql语句中使用  又能在宿主语言中
+   使用的变量叫宿主变量。
+   6.2 宿主变量的类型
+   char 
+   char     var[n]   定长字符串
+   short 
+   int 
+   long 
+   float
+   double 
+   varchar  var[n]   变长字符串
+
+   'abc'   
+   6.3 定长字符串  vs  变长字符串
+   char  var[n]   定长字符串
+
+   变长字符串的表达
+   a. char  -----> varchar
+      在select语句中 要和正常的变量一样去使用
+      varchar类型的变量.
+      在宿主语言中  使用变量名.arr 取得值
+      要注意垃圾值问题
+          varchar  var_name[30]={0};
+	  变量名.len  放入的实际数据长度
+          var_name.arr[var_name.len]='\0';
+   b. 预编译选项处理
+      gcc   -c  -E  -L  -l 
+      proc  char_map=charz 默认 定长 空格补齐 \0结尾
+                     charf|varchar2 定长 空格补齐
+		     string  变长  \0结尾
+  6.4 proc的其它预编译选项
+     和proc++ 相关的预编译选项
+     oname  parse  code 
+     和PLSQL调用相关的
+     sqlcheck=semantics
+     userid=用户名/密码
+   
+  6.5 宿主变量的使用注意事项
+     宿主变量强烈建议放入申明区
+         这样可以避免系统 和 语言的差异
+	 exec  sql  begin declare section;
+	     /* 这就是申明区 */
+	 exec  sql  end   declare section;
+     宿主变量 可以使用指针 但需要分配内存
+         空间。
+     DDL 中 不能使用宿主变量 
+         char table_name[30]="s_emp";
+	 /* 删除一张表 叫 table_name */
+	 exec sql drop table  table_name;
+	 /* 编译错误 */
+         exec sql drop table  :table_name;
+     使用宿主变量时 建议在变量前加一个冒号
+         避免sql翻译的问题。
+         int    id=2;
+	 char   var_name[30];
+	 exec sql  select  first_name 
+	     into :var_name 
+	     from s_emp  where id=:id;
+七.指示变量 
+   7.1 当数据库中的字段值 赋值给宿主变量
+   时 赋值的状态可以通过指示获得。
+   指示变量的值如果是
+   ==0   代表赋值正常
+   ==-1  代表数据库中的字段值是NULL值
+   >0    代表截断赋值  尽量避免 
+   7.2 指示变量的语法
+   指示变量 必须是short类型
+   short   var_ind=0;
+   使用如下
+   exec sql select  first_name 
+      into :var_name:var_ind
+      from s_emp where id=2;
+   exec sql select  first_name 
+      into :var_name indicator :var_ind
+      from s_emp where id=2;     
+   7.3 举例
+   把s_emp 表中 id=1 的manager_id  赋值给
+   一个宿主变量  并且使用指示器变量 指示
+   赋值的状态。
+
+八.数组变量 
+   8.1 数组变量的使用注意事项
+      proc中只一维数组 字符除外。
+      proc中不支持数组指针。
+      最大元素个数 32767。
+      在select语句中 使用数组变量时 只能出现
+          变量的名字 不能出现下标。
+   8.2 把s_emp 表中所有的 id  first_name 
+   manager_id  分别放入数组中。然后遍历数组的
+   内容。指示first_name ,manager_id 赋值状态
+
+   int     ids[50];
+   short   indnames[50];
+   char    names[50][30];
+   short   indmids[50];
+   int     mids[50];
+
+   sqlca.sqlerrd[2]  sql语句影响的行数
+九.sqlca 通信区
+   sqlca 本质上是一个结构体,当执行sql语句
+   时 系统会自动把这个结构体中的字段更新
+   一遍。所以执行完一条sql 要立即获取执行
+   的信息 否则会被下一次sql覆盖掉。
+
+   sqlca.sqlerrd[2]  sql语句影响的行数
+   sqlca.sqlcode
+       ==0  sql语句执行正常 
+       >0   异常发生 
+       <0   网络错误 数据库本身出错
+   sqlca.sqlerrm.sqlerrmc sql语句出错之后
+       sql出错消息内容。
+
+   sqlca.sqlcode 在事务中的应用
+   exec sql update  account  
+       set money=money-5000  where ano='A';
+   a=sqlca.sqlcode;
+   exec sql update  account  
+       set money=money+5000  where ano='B';
+   b=sqlca.sqlcode;
+   if(a==0 && b==0){
+       exec sql  commit;
+   }else{
+       exec sql  rollback;
+   }
+ 
+十.oraca 通信区
+   这个通信区 是对 sqlca的信息补充。
+   可以从这个通信区中获取执行的sql语句。
+
+   使用oraca的步骤
+   1.包含oraca
+   exec sql  include sqlca;
+   exec sql  include oraca;
+   2.打开oraca
+   exec oracle  option(oraca=yes);
+   3.设置sql的保存标志
+   oraca.orastxtf=0 默认 不保存sql
+                 =1 sql出错时保存
+		 =2 sql出现警告
+		    或者sql出错时保存
+                 =3 都保存
+   4.获取 sql 文本
+   oraca.orastxt.orastxtc 
+
+
+十一.proc 中如何嵌入sql语句
+   11.1 proc中如何使用select语句
+   在select语句前加 exec  sql
+   select 语句 要和into 关键字结合 把查询
+   的内容放入宿主变量中。
+   11.2 DDL(create  drop  alter)
+        DML(insert  delete update)
+	TCL(commit  rollback savepoint)
+   在这些语句前加 exec sql
+   DDL中不能使用宿主变量
+十二.proc 中如何嵌入plsql
+   12.1 只要出现一个调用块
+   exec sql  execute
+       begin
+           /* 这里相当于匿名块 */
+       end;
+   end-exec;
+   12.2 写一个存储过程 传入两个整数参数
+   把两个整数参数的和 存入第二个参数中。
+   然后写一个proc程序调用 并 验证这个存储
+   过程的功能。
+   create  or replace  procedure getsum(
+   var_x in number,var_y in out number)
+   is
+   begin
+       var_y:=var_x+var_y;
+   end;
+   /
+   
+   proc ***.pc  sqlcheck=semantics 
+       userid=openlab/open123
+   userid  是在预编译期就连接数据库 检查
+           存储过程是否存在和 合法。
+
+   12.3 要求写一个PLSQL 函数 设计两个整数
+   参数 返回两个参数的最大值  并且把两个
+   参数的和放入第二个参数中。
+   写一个proc程序 调用这个函数 验证函数的
+   功能 并且要求函数参数必须使用宿主变量。
+   create  or  replace  function getMaxAndSum(
+    x in number,y in  out number)return number
+   is
+      var_temp   number;
+   begin
+      var_temp:=y;
+      y:=x+y;
+      if x<var_temp then
+          return  var_temp;
+      end if;
+          return  x;
+   end;
+   /
+
+十三.数据库的连接
+    本地连接:
+    exec sql connect:用户名/密码;
+    exec sql connect:用户名  
+        indentified by:密码;
+    连接的服务名是 echo $ORACLE_SID
+    
+    远程连接:
+
+    $ORACLE_HOME/network/admin/tnsnames.ora
+    CAH_192.168.0.26 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.26)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = tarena)
+    )
+  )
+
+  程序中如果有多个数据库连接  则需要使用标签
+  区分连接。
+  
+  exec sql  connect:userpasswd at:标签名
+      using :远程数据库描述;
+  exec sql  connect:userpasswd at:标签名;
+  只要在后面 每个sql操作前
+  加上 exec sql  at:标签名  sql操作。
+

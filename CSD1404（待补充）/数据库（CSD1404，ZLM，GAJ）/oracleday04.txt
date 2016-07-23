@@ -1,0 +1,454 @@
+一.约束 (constraint)
+  1.1概念
+  数据库中字段 可以加一些限制条件 如果满足条件
+  数据合法进入数据库否则不能进入数据库。
+  1.2 数据库中的约束
+  主键约束       primary key 
+      这个字段的值 必须满足非空 和 唯一的要求
+      一个表只能有一个主键
+  非空约束       not    null
+      这个字段的值 不能是NULL值
+  唯一约束       unique
+      这个字段的值 不能重复
+  检查约束       check
+      这个字段的值必须符合检查条件 
+  外键约束       references   
+                 foreign  key
+  1.3 约束的实现
+     列级约束:在定义表的某一列时 直接在这个列的
+         后面加约束限制。
+     
+     表级约束:在定义完表的所有列之后 再选择某些
+         列加约束限制。
+  1.4 主键的列级约束
+     create table  testcolumn_consa(
+         id   number primary key,
+	 name  varchar2(30)  
+     );
+    insert  into   testcolumn_consa values(
+       9527,'tangbohu');
+    insert  into   testcolumn_consa values(
+       9527,'tangbohu');
+    ERROR at line 1:
+    ORA-00001: unique constraint 
+       (OPENLAB.SYS_C00465395) violated
+    如果加约束时 不给约束起名字 则系统会自动
+    给这个约束起一个唯一的名字。
+     drop   table  testcolumn_consaa;
+     create table  testcolumn_consaa(
+         id   number constraint  
+	   testcolumn_consaa_id_pk primary key,
+	 name  varchar2(30)  
+     );
+    insert  into   testcolumn_consaa values(
+       9527,'tangbohu');
+    insert  into   testcolumn_consaa values(
+       9527,'tangbohu');
+    ERROR at line 1:
+   ORA-00001: unique constraint 
+   (OPENLAB.TESTCOLUMN_CONSAA_ID_PK) violated
+   
+   1.5 建立一张表 
+     id     number   设置成主键
+     fname   varchar2(20)  设置成唯一
+     sname   varchar2(20)  设置成非空
+     salary  number   月薪大于3500
+     并且给约束 按照表名_字段名_约束类型起名字
+     drop   table  testcolumn_consc;
+     create table  testcolumn_consc(
+         id   number constraint  
+	   testcolumn_consc_id_pk primary key,
+	 fname  varchar2(20)  constraint
+	   testcolumn_consc_fname_uk  unique,
+	 sname  varchar2(20)  constraint
+	   testcolumn_consc_sname_nn  not null,
+	 salary  number   constraint 
+	   testcolumn_consc_salary_ck 
+	     check(salary>3500 and 
+	     salary<100000) 
+     ); 
+
+     insert  into  testcolumn_consc values
+       (1,'testa','testa',3501);
+     insert  into  testcolumn_consc values
+       (2,'testa','testa');
+
+     找出工资大于1500  并且 id 大于15的员工
+      where   salary>1500  and  id>15
+
+   1.5主键表级约束
+      /* 表级约束的优势是可以做联合约束 */
+      create table  testtablecons(
+          id   number,
+	  fname varchar2(30),
+	  sname varchar2(30),
+	    constraint testtablecons_id_pk
+	    primary key(id,fname) 
+      );
+
+     insert  into  testtablecons  
+         values(1,'testa','testas');
+     insert  into  testtablecons  
+         values(1,'testb','testbs');
+     /* 把下面的约束改成 表级约束 */
+     create table  testcolumn_consc(
+         id   number constraint  
+	   testcolumn_consc_id_pk primary key,
+	 fname  varchar2(20)  constraint
+	   testcolumn_consc_fname_uk  unique,
+	 sname  varchar2(20)  constraint
+	   testcolumn_consc_sname_nn  not null,
+	 salary  number   constraint 
+	   testcolumn_consc_salary_ck 
+	     check(salary>3500 and 
+	     salary<100000) 
+     ); 
+
+     not null 没有联合约束要求 导致not null
+     没有表级约束。
+    
+     create table  testcolumn_consd(
+         id   number ,
+	 fname  varchar2(20)  ,
+	 sname  varchar2(20)  constraint
+	   testcolumn_consd_sname_nn  not null,
+	 salary  number,
+         constraint  testcolumn_consd_id_pk
+	 primary key(id),
+	 constraint  testcolumn_consd_fname_uk
+	 unique(fname),
+	 constraint  testcolumn_consd_salary_ck
+	 check (salary>3500  and salary<100000)
+   );
+   
+二.外键约束
+   2.1 概念
+   涉及到 两张表  一张 主表(父表)  一张是
+   从表(子表)。
+   定义了外键的表 是从表(子表)。
+   子表中的外键字段的取值 受限于父表中字段的
+   取值,要么取父表中字段的值 要么取NULL值。
+   主表中被引用的字段必须满足唯一性。
+
+   2.2 如何实现
+      表级 和 列级
+      2.2.1 外键的列级约束
+      create   table   parent1404100(
+          id    number  constraint 
+	    parent1404100_id_pk   primary key,
+          name   varchar2(30) 
+      );
+      create   table   child1404100(
+          id    number  constraint 
+	    child1404100_id_pk   primary key,
+	  name  varchar2(30),
+	  fid   number  constraint 
+	    child1404100_fid_fk references  
+	    parent1404100(id)
+      );
+
+      建立表时 一般先建立父表后建立子表
+          除非先不考虑主外键。
+
+      插入数据  一般先插入父表数据 后插入
+          子表数据 除非子表的外键值是NULL
+          insert  into  child1404100  
+	  values(1,'testa',1);
+	  insert  into  child1404100  
+	  values(1,'testa',NULL);
+
+	  insert  into  parent1404100 
+	  values(1,'parenta');
+	  insert  into  child1404100  
+	  values(2,'testb',1);
+	  insert  into  child1404100  
+	  values(3,'testc',1);
+     删除数据  
+         先删除 和 父表中关联的子表数据 
+	 才能删除相应的父表中的数据。
+	 delete  from  parent1404100 where id=1;
+	 insert  into  parent1404100 
+	  values(2,'parentb');
+     删除表
+         一般先删除子表 后删除父表
+	 drop  table  parent1404100;
+         ERROR at line 1:
+         ORA-02449: unique/primary keys in
+	 table referenced by foreign keys
+
+	 /* 打破删表的顺序 */
+	 drop   table   表名 
+	    cascade constraints;
+         drop  table  parent1404100 cascade 
+	    constraints;
+   2.3 建立一张员工表 
+       id     number
+       name   varchar2(30)
+       salary number
+       dept_id  number
+
+       建立一张部门表  
+       id     number
+       name   部门名
+
+       给部门表插入 两条数据
+       插入3个员工信息 属于第一个部门
+       插入2个员工信息 属于第二个部门 
+       drop    table  mydept1404;
+       create  table  mydept1404(
+           id  number  constraint 
+	      mydept1404_id_pk  primary  key,
+	   name  varchar2(30)
+       );
+       insert into mydept1404 values(1,'test1');
+       insert into mydept1404 values(2,'test2');
+       commit; 
+       drop    table  myemp1404;
+       create  table  myemp1404(
+           id  number  constraint 
+	      myemp1404_id_pk  primary  key,
+	   name  varchar2(30),
+	   salary number,
+	   dept_id number constraint  
+              myemp1404_dept_id_fk  references
+	      mydept1404(id)
+       );
+       insert  into myemp1404 values(1,'ea',
+          1000,1);
+       insert  into myemp1404 values(2,'eb',
+          1001,1);
+       insert  into myemp1404 values(3,'ec',
+          1002,1);
+       insert  into myemp1404 values(4,'ed',
+          2001,2);
+       insert  into myemp1404 values(5,'ee',
+          2002,2);
+       commit;
+
+   2.4 搭建数据库环境
+       准备脚本  vi  ****.sql
+       使用ftp  上传脚本到服务器
+           ftp   IP
+	   openlab
+	   open123
+	   ftp>put  ***.sql 
+	   ftp>get  ***.sql
+       登录服务器 进入sqlplus 执行脚本
+       SQL>/user/openlab/****.sql
+   2.5  on delete cascade 
+           真正把关联的数据删除掉
+        on delete set null
+	   把关联的子表的外键设置成NULL值 
+
+   2.6 外键的表级约束
+       drop    table  myemp1404 
+           cascade constraints;
+       drop    table  mydept1404 
+           cascade constraints;
+       create  table  mydept1404(
+           id  number  constraint 
+	      mydept1404_id_pk  primary  key,
+	   name  varchar2(30)
+       );
+      
+       create  table  myemp1404(
+           id  number  constraint 
+	      myemp1404_id_pk  primary  key,
+	   name  varchar2(30),
+	   salary number,
+	   dept_id number,
+	      constraint  
+              myemp1404_dept_id_fk 
+	      foreign key(dept_id) references
+	      mydept1404(id)
+       );
+       
+三.数据库中的其它对象
+   3.1 序列 sequence
+      3.1.1 序列是用来 产生一组不重复数据的对象
+      一般用来解决主键值的问题。
+      3.1.2 语法
+      create  sequence  序列名 ;
+      create  sequence  testseq1404test_id;
+      3.1.3 使用
+      序列名.nextval
+      序列名.currval
+      create table  testseq1404test(
+          id  number  primary  key,
+	  name varchar2(30),
+	  salary   number
+      );
+      1.0*10 27
+      insert into testseq1404test values(
+          testseq1404test_id.nextval,
+	  'test'||testseq1404test_id.currval,
+	  1000
+      );
+      3.1.3 删除序列
+      drop  sequence  序列名;
+
+  3.2 索引   index
+      3.2.1 索引就是为了加速查询的。
+      3亿   没有任何优化   8分钟
+            使用索引查找   0.01 0.00 
+      3.2.2 索引的底层使用 树状结构 来组织
+      数据,消耗掉大量的空间 和 时间 来加速
+      查询。
+      3.2.3 索引的语法
+      非唯一性索引 因为唯一性字段上系统会自动
+      建立索引。
+      create   index  索引名  on 表名
+      (字段名1,字段名2);
+      3.2.4 删除索引
+      drop  index   索引名;
+  3.3 视图  view
+      3.3.1 视图的本质就是一条sql语句
+          视图相对于 它对应的数据而言 视图
+	  本身的空间 可以忽略。
+      3.3.2 语法
+          create  or replace  view  视图名
+	     as  select语句;
+          create  or replace  view  myview
+	     as  select id,first_name
+	     from s_emp;
+          create  or replace  view  myview2
+	     as  select id,first_name,salary
+	     from s_emp;
+      3.3.3 作用
+          对同一份物理数据 做不同的表现
+	      便于权限的控制。
+          简化查询
+	      select  * from(select id,
+	        first_name,salary from s_emp);
+              select * from myview2;
+      3.3.4 删除视图
+          drop  view  视图名;
+		  
+四.分页技术
+   sqlserver   top    n
+   mysql       limit m,n
+   oracle      rownum 
+
+   如果一页显示 11 条数据  显示第一页数据
+   select  id,first_name,salary from s_emp;
+   
+   rownum  行编号   
+   select  rownum,first_name,salary 
+       from s_emp where rownum<12;  
+   
+   如果一页显示 11 条数据  显示第二页数据
+      select  rownum,first_name,salary 
+       from s_emp where rownum<23 and 
+       rownum>11;
+   
+select* from
+    (select  rownum r,first_name,
+    salary from s_emp where rownum<23)
+        where r>11;
+  按照工资排序  一页显示11 条 取得第二数据
+  显示  first_name  salary
+  先排序  还是 先编号 ?先排序 
+  select * from (
+      select rownum r,first_name,salary from
+         (select first_name,salary
+         from  s_emp  order by  salary) 
+      where rownum<23)
+  where  r>11;
+
+  最内层查询  排序
+  中间查询    编号 起别名
+  最外层查询  去除rownum的特性
+  
+  按照工资排序  一页显示11 条 取得第三页数据
+  显示  first_name  salary
+  select * from (
+      select rownum r,first_name,salary from
+         (select first_name,salary
+         from  s_emp  order by  salary) 
+      where rownum<3*11+1)
+  where  r>2*11;
+
+  /* 列出sql中 和 NULL相关的知识点? */ 
+ 
+  user_tables   table_name 查询以S开头的表名
+  select  table_name  from  user_tables
+      where  table_name like 'S%';
+  user_tables   table_name 查询以S_开头的表名
+  select  table_name  from  user_tables
+      where  table_name like 'S\_%' escape '\';
+  select  table_name  from  user_tables
+      where  table_name like 'S\_\_%' 
+      escape '\';
+
+
+  desc  user_constraints;
+
+
+ /* 列出sql中 和 NULL相关的知识点? */
+ 1.nvl(par1,par2)
+   单行函数
+   sysdate
+   to_char
+   to_date
+   add_months
+   last_day
+   next_day(sysdate,'monday')
+ 2.is  null 
+   =        !=   ^=   <>
+   >        <=
+   <        >= 
+   >=        
+   <=
+   between   a  and b    not  between a and b 
+   in                    not  in 
+   like                  not  like
+   is null               is not null
+
+   and 
+   or 
+   not 
+ 3.排序 
+   最大值 
+
+ 4.表连接
+   内连接
+       等值连接   
+       非等值
+       自连接   
+   外连接
+       等值连接   
+       非等值
+       自连接   
+
+   SQL99中的内外连接的标准
+   内连接:
+       a  join  b 表  on 连接条件
+   外连接:
+       a  left  outer  join  b  on 连接条件;
+       .....
+ 5.组函数
+   select  count(*) from s_emp;
+   count
+   max
+   min
+   avg
+   sum
+ 6.分组
+   group  by
+   having 
+   sql执行顺序
+   分组语句 select后字段的限制
+
+ 7.子查询
+   
+ 8.DDL 
+   
+ 9.DML 
+   TCL  
+
+ 10.约束
+   
+
+ 11.序列
+  
+ 12.

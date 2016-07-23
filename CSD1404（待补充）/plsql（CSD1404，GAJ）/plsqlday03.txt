@@ -1,0 +1,283 @@
+
+
+ 5.6  1+2+3+4+....+n
+      n=10   55
+      n=100  5050
+   写一个存储过程 设计一个参数n 代表从1加到
+   的数据 把前n项的和放入第二个参数中！
+   验证这个存储过程的功能！
+   
+   create   or  replace procedure proNumN(n in number,
+   var_res  out number)
+   is
+   begin
+       var_res:=0;
+       for x in 1..n loop
+          var_res:=var_res+x;
+       end loop;
+   end;
+   /
+
+   declare
+       var_res   number:=0;
+   begin
+       proNumN(10,var_res);
+       dbms_output.put_line('var_res='
+       ||var_res);
+   end;
+   /
+
+六. 函数  
+  6.1 plsql中函数 和 存储过程的不同
+      关键字不同  procedure   function。 
+      函数有返回值类型 和返回值 而过程没有。
+      调用方式不同  过程可以在plsql中直接调用
+          而函数必须组成表达式才可以。
+  6.2 设计一个函数  有两个整数参数 
+      返回这两个参数的最大值
+      create  or replace  function getmax(
+          var_x  in number,var_y number)
+      return  number   
+      is
+      begin
+          if  var_x < var_y then
+	      return  var_y;
+          end if;
+	      return  var_x;
+      end;
+      /
+
+      SQL> show  errors
+      SQL> select  getmax(1,9527) from dual;
+
+   
+      select text from  user_source 
+          where name='GETMAX';
+
+      declare
+          var_res   number:=0;
+      begin
+          var_res:=getmax(1,100);
+	  dbms_output.put_line(var_res);
+      end;
+      /
+
+      定义函数 设计两个整数参数  返回两个参数
+      的最大值 并且 把两个参数的和存入第二个
+      参数中。测试这个函数的功能！
+      
+      drop    procedure  progetmax;  
+      create  or replace  function getMaxAndSum
+      (var_x in number,var_y in out number)
+      return  number
+      is
+          var_temp   number;
+      begin    
+          var_temp:=var_y;
+	  var_y:=var_x+var_y;
+          if  var_x < var_temp  then 
+	      return  var_temp;
+          else
+	      return  var_x;
+	  end if; 
+      end;
+      /
+
+     declare
+         var_x  number:=1;
+	 var_y  number:=9526;
+	 var_z  number:=0;
+     begin
+         var_z:=getMaxAndSum(var_x,var_y);
+	 dbms_output.put_line(var_z);
+         dbms_output.put_line(var_y);
+     end;
+     /
+
+七.包   package
+   7.1  把一组相关的对象 组织到一起 然后
+   给这个逻辑结构起一个名字。
+   7.2  系统提供的包
+   desc  包名;
+   使用包中的数据 只要在数据前 加包名.数据
+   dbms_output
+       dbms_output.put_line('hello plsql');
+   dbms_random
+       value(low,high)
+       select  dbms_random.value(1,100)
+           from  dual;
+       select  trunc(dbms_random.value(1,100))
+           from  dual;
+   dbms_job   定时任务包
+       可以定时调用存储过程
+       submit(job  out  binary_integer,
+              what in   varchar2,
+	      next_date  date,
+	      interval   varchar2);
+       job 当把定时任务提交给系统时 系统会
+       这个任务分配一个任务编号 放入job中。
+       what 需要定时调用的存储过程
+       next_date  第一次调用的时间
+       interval   第二次调用的时间 
+
+       run(job  in binary_integer);
+       把编号为job任务执行起来
+
+       remove(job in binary_integer);
+        把编号为job任务移除   
+
+ 1.建立一张表
+   drop    table  test1404job;
+   create  table  test1404job(
+       id  number  primary key,
+       name varchar2(30)
+   );
+ 2.建立一个序列
+   drop   sequence test1404job_id;
+   create sequence test1404job_id;
+ 3.写一个存储过程 调用一次就向表中插入一条数据
+   create  or replace  procedure 
+   test1404job_pro
+   is
+   begin
+       insert  into test1404job values(
+       test1404job_id.nextval,
+       'test'||test1404job_id.currval);
+       commit;
+   end;
+   /
+
+   begin
+       test1404job_pro();
+   end;
+   /
+   select * from test1404job;
+ 4.配置存储过程到 dbms_job 
+   declare
+       jobno   binary_integer;
+   begin
+       dbms_job.submit(jobno,
+       'test1404job_pro();',
+       sysdate,'sysdate+1/(24*60)');
+       dbms_job.run(jobno);
+       dbms_output.put_line('jobno='||jobno);
+   end;
+   /
+ 5.验证  查看表即可
+   select * from test1404job;
+   
+ 6.取消定时任务 
+   select  job from  user_jobs;
+   begin
+       dbms_job.remove(1601);
+   end;
+   /
+
+
+八.用户自定义包
+  调用包中的数据  在数据前 加 包名.
+  建立一个包  相当于c的头文件
+      声明过程 声明函数
+  create  or replace  package  mypack
+    is
+       procedure  getmax(x number,y number);
+       function   getmin(x number,y number)
+          return  number;
+    end;
+    /
+  Package created.
+
+  写一个包的实现  package body 
+  相当于c的实现文件 
+   create  or replace  package body mypack
+    is
+       procedure  getmax(x number,y number)
+       is
+       begin
+           if x<y then
+	      dbms_output.put_line(y);
+           else
+	      dbms_output.put_line(x); 
+	   end if;
+       end;
+       function   getmin(x number,y number)
+          return  number
+       is
+       begin
+           if x <y then
+	      return x;
+           end if;
+	      return y;
+       end;
+    end;
+    /
+  
+   Package body created.
+
+   declare
+       var_res  number; 
+   begin
+       mypack.getmax(1,2);
+       var_res:=mypack.getmin(1,123);
+       dbms_output.put_line(var_res);
+   end;
+   /
+
+ 九.触发器   trigger
+   9.1 在进行DML(insert  delete  update)操作
+   时，这些操作可以被系统的触发器捕获到,从而
+   相应相应的动作。
+   9.2 语法
+   create  or replace  trigger  触发器名 
+       before|after  DML   on 表  |for each row
+   declare
+   begin
+   end;
+   /
+   9.3 create table  testemp1404  as 
+       select id,first_name name ,salary 
+       from s_emp;
+   create  or replace  trigger  testemp140_tri 
+       after  update   on  testemp1404
+   declare
+   begin
+       dbms_output.put_line('update testemp1404');
+   end;
+   /
+   update  testemp1404 set salary=salary+100
+       where id=1;
+   update  testemp1404 set salary=salary+100
+       where id<1;
+   update  testemp1404 set salary=salary+100
+       where id>1;
+   
+   无论sql语句影响多少行 只触发一次 这种触发器
+   叫语句级触发器。
+    
+   可以针对sql语句影响的每一行都做触发
+   这叫行级触发器。
+   create  or replace  trigger  testemp140_tri 
+   after  update   on  testemp1404 for each row
+   declare
+   begin
+       dbms_output.put_line(:old.id||':'||
+       :old.salary); 
+       dbms_output.put_line('update testemp1404');
+       dbms_output.put_line(:new.id||':'||
+       :new.salary); 
+   end;
+   /  
+
+   update  testemp1404 set salary=salary+100
+       where id=1;
+   update  testemp1404 set salary=salary+100
+       where id<1;
+   update  testemp1404 set salary=salary+100
+       where id>1;
+
+
+   update    :old   :new 
+   delete    :old
+   insert           :new 
+
+

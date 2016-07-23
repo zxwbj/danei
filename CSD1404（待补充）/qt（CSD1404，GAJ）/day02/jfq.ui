@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>643</width>
+    <height>189</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QLineEdit" name="add">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>113</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="added">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>80</y>
+     <width>113</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="res">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>78</y>
+     <width>113</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+  </widget>
+  <widget class="QLabel" name="oper">
+   <property name="geometry">
+    <rect>
+     <x>181</x>
+     <y>75</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>+</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="equ">
+   <property name="geometry">
+    <rect>
+     <x>379</x>
+     <y>78</y>
+     <width>85</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>=</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

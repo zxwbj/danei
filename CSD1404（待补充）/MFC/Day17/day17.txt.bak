@@ -1,0 +1,8 @@
+一 使用MFC的Socket类实现简单的文件传输
+  1 相关类
+  CAsyncSocket类-异步socket类。
+  CSocket类-父类是CAsyncSocket类，同步socket类。
+  2 使用
+  2.1 文件传输的服务器端
+      
+  2.2 文件传输的客户端 

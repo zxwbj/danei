@@ -1,0 +1,545 @@
+plsql    2,3,4,5,7 
+一.plsql 简介
+   1.1 常见的访问oracle的技术
+   PLSQL     (procedure) 过程化sql
+   proc/c++  使用c或者c++ 访问oracle数据库
+
+   ODBC/ADO  vc中访问数据库的技术
+   JDBC/SQLJ java 中访问数据库的技术
+   
+   1.2 plsql的特点
+   结构化 模块化编程
+   良好的可移植性
+   良好的可维护性
+   提升系统性能
+
+   不便于向异构数据库移植
+
+二.plsql 的程序结构 
+   declare
+       /* 申明区 
+          定义变量  定义类型 */
+       -- 这是单行注释    
+   begin
+       /* 执行区 
+          执行sql语句 和 plsql语句 */
+   exception
+       /* 异常处理区 
+          处理程序的异常情况 */
+   end;
+三.写一个plsql程序
+   begin
+       dbms_output.put_line('hello plsql!');
+   end;
+   /
+ 
+  设置输出为打开状态
+  set  serveroutput on;
+
+  开发工具:
+      命令行下的 sqlplus 
+      图形化     sqlprogrammer   plsqldeveloper
+四.变量 
+   4.1 标识符
+   给变量  类型  函数 过程 游标 等命名的
+   4.2 如何定义变量
+   declare
+       变量名    类型:=值;
+   begin
+   4.3 举例
+   declare
+       var_name   varchar2(30):='openlab';
+   begin
+       var_name:=var_name||'test';
+       dbms_output.put_line(var_name);
+   end;
+   /
+   4.4 变量的修饰
+   变量名  constant  类型  not  null:=值;
+   一个变量没有赋值 则值为NULL值
+   declare 
+       var_name  varchar2(30) not null:='abc';
+   begin
+       var_name:='test';
+       dbms_output.put_line(var_name); 
+   end;
+   /
+   
+   declare 
+       var_name constant varchar2(30):='test';
+   begin
+       -- var_name:='abc'; 
+       dbms_output.put_line(var_name); 
+   end;
+   /
+
+  4.5 变量的类型
+     标量类型:varchar2 char  number  date
+              binary_integer   boolean
+     组合类型:
+              record(记录类型) 
+	      table类型
+     参考类型:
+              ref  (ref cursor )
+     了解大类型:(存储的是资源的路径)
+             BLOB
+	     CLOB
+	     BFILE  
+  4.6  binary_integer   和 boolean
+     declare
+         var_count binary_integer;
+	 var_f     boolean; 
+     begin
+         var_count:=1001;
+	 /* var_f 取值可以是 true false NULL */ 
+	 var_f:=true;
+	 if var_f then
+	    dbms_output.put_line
+	       ('var_count='||var_count);
+         end if; 
+     end;
+     /
+  4.7 定义两个变量  分别和s_emp 表中的 
+    first_name 和 salary的类型相同。然后
+    把id=1的first_name 和 salary 分别赋值
+    给这两个变量 最后输出这两个变量的值。
+    declare
+        var_name    varchar2(25);
+	var_sal     number(11,2);
+    begin
+        var_name:='Carmen';
+	var_sal:=2500;
+        dbms_output.put_line(var_name||':'||
+	var_sal); 
+    end;
+    /
+  4.8 如何获取 表中的一个字段对应的类型
+          表名.字段名%type 
+      如何使用查询语句 给 变量赋值
+          select 语句 结合   into
+    declare
+        var_name    s_emp.first_name%type;
+	var_sal     s_emp.salary%type;
+    begin
+        select first_name,salary 
+	    into var_name,var_sal 
+	    from  s_emp where id=25;
+        dbms_output.put_line(var_name||':'||
+	var_sal); 
+    end;
+    /
+ 4.9  类似于c中的结构体类型的 record类型
+    4.9.1 语法
+    定义record类型
+    type   类型名 is record(
+        字段名1    类型,
+	字段名2    类型,
+	字段名3    类型
+    );
+ 
+    定义变量
+    变量名    类型名;
+    4.9.2 举例
+    要求把s_emp 表中的 id  first_name salary
+    对应的类型 包装成 record 类型  然后使用
+    这个类型创建变量  最后把id=2对应的值赋值
+    这个变量  输出这个变量的值。
+    declare
+        /* 定义emp类型 */
+        type  emp  is record(
+	    id         s_emp.id%type,
+	    first_name s_emp.first_name%type,
+	    salary     s_emp.salary%type
+	);  
+	/* 定义变量 */
+	var_emp    emp;
+    begin
+        select id,first_name,salary into var_emp
+	    from s_emp where id=2;
+        dbms_output.put_line(var_emp.id||':'||
+	var_emp.first_name||':'||var_emp.salary);
+    end;
+    /
+   4.9.3 记录变量之间的赋值 	      
+    declare
+        /* 定义emp类型 */
+        type  emp  is record(
+	    id         s_emp.id%type,
+	    first_name s_emp.first_name%type,
+	    salary     s_emp.salary%type
+	);  
+	/* 定义变量 */
+	var_emp    emp;
+	var_emp2   emp;
+    begin
+        select id,first_name,salary 
+	    into var_emp2
+	    from s_emp where id=2;
+        -- var_emp:=var_emp2;
+        /* 只想赋值 first_name 和salary */
+	var_emp.first_name:=var_emp2.first_name;
+	var_emp.salary:=var_emp2.salary;
+        dbms_output.put_line(var_emp.id||':'||
+	var_emp.first_name||':'||var_emp.salary);
+    end;
+    /
+  4.9.4 查询的字段数 少于记录类型字段数时 
+        select  first_name,salary 
+	    into var_emp2.first_name,
+	      var_emp2.salary
+	    from s_emp where id=2;
+
+    declare
+        /* 定义emp类型 */
+        type  emp  is record(
+	    id         s_emp.id%type,
+	    first_name s_emp.first_name%type,
+	    salary     s_emp.salary%type
+	);  
+	/* 定义变量 */
+	var_emp    emp;
+    begin
+        select first_name,salary 
+	    into var_emp.first_name,
+	    var_emp.salary
+	    from s_emp where id=2;
+        dbms_output.put_line(var_emp.id||':'||
+	var_emp.first_name||':'||var_emp.salary);
+    end;
+    /
+  4.10 如何定义一个记录类型 保存s_emp 表中id=1
+  的所有数据。
+  表名%rowtype  取得表的一行对应的类型
+  字段名 和 字段顺序 完全和表头相同的记录类型
+  
+  declare
+      var_emp   s_emp%rowtype;
+  begin
+      select  *  into var_emp  from s_emp
+          where id=1;
+      dbms_output.put_line(var_emp.id||':'||
+      var_emp.first_name||':'||var_emp.salary);
+  end;
+  /
+ 4.11 类似于c中数组的类型   table类型
+    4.11.1  语法
+    type  类型名  is table of  表中的元素类型
+        index  by binary_integer;
+    变量名  类型;
+
+    使用小括号 结合下标 操作table类型的变量
+
+    4.11.2 举例
+    把  300  500  900 600 分别放入一个table
+    类型的变量中 然后输出这个变量的值
+    declare
+        /* 定义一个装数字的 table类型 */
+        type  numstype  is table of  number
+	    index  by binary_integer;
+        /* 使用类型定义变量 */
+	var_nums    numstype;
+    begin
+        var_nums(-1):=300;
+	var_nums(2):=500;
+	var_nums(1):=900;
+	var_nums(0):=600;
+        dbms_output.put_line(var_nums(-1));
+	dbms_output.put_line(var_nums(2));
+    end;
+    /
+
+  4.11.3 下标连续时 对table变量的遍历
+    declare
+        /* 定义一个装数字的 table类型 */
+        type  numstype  is table of  number
+	    index  by binary_integer;
+        /* 使用类型定义变量 */
+	var_nums    numstype;
+	/* 定义一个变量 保存下标 */
+	var_ind     binary_integer:=-1;
+    begin
+        var_nums(-1):=300;
+	var_nums(2):=500;
+	var_nums(1):=900;
+	var_nums(0):=600;
+        dbms_output.put_line(var_nums(var_ind));
+	var_ind:=var_ind+1;
+	dbms_output.put_line(var_nums(var_ind));
+	var_ind:=var_ind+1;
+        dbms_output.put_line(var_nums(var_ind));
+        var_ind:=var_ind+1;
+        dbms_output.put_line(var_nums(var_ind));
+    end;
+    /
+ 4.11.4 下标不连续 如何遍历table类型变量 
+    迭代器思想:可以根据一个元素的信息 得到下
+    一个元素对应的信息。
+    变量.first()  得到第一个元素对应的下标
+    变量.next(n)  根据一个元素的下标得到下
+        一个元素对应的下标。
+    变量.last()   得到最后一个元素对应的下标
+
+    declare
+        /* 定义一个装数字的 table类型 */
+        type  numstype  is table of  number
+	    index  by binary_integer;
+        /* 使用类型定义变量 */
+	var_nums    numstype;
+	/* 定义一个变量 保存下标 */
+	var_ind     binary_integer:=-1;
+    begin
+        var_nums(-1):=300;
+	var_nums(3):=500;
+	var_nums(1):=900;
+	var_nums(0):=600;
+	var_ind:=var_nums.first();
+        dbms_output.put_line(var_nums(var_ind));
+	var_ind:=var_nums.next(var_ind);
+	dbms_output.put_line(var_nums(var_ind));
+	var_ind:=var_nums.next(var_ind);
+        dbms_output.put_line(var_nums(var_ind));
+        var_ind:=var_nums.next(var_ind);
+        dbms_output.put_line(var_nums(var_ind));
+    end;
+    /
+五.变量的作用域 和 可见性
+   declare
+       var_a    number:=1;
+   begin
+       declare
+           var_b   number:=100;
+       begin
+           /* 局部可以访问全局 */
+       end;
+       /* 全局不能访问局部 */
+   end;
+   /
+   
+   /* abc 是plsql中的标签  */
+   <<abc>>
+   declare
+       var_a    number:=1;
+   begin
+       declare
+           var_a   number:=100;
+       begin
+           dbms_output.put_line(var_a);
+	   dbms_output.put_line(abc.var_a);
+       end;       
+   end;
+   /
+
+六.plsql中的 控制语句
+  6.1  分支语句
+  6.1.1 语法
+  if(a>b){            if  a>b    then
+  
+  }                   end if;
+
+  if(a>b){            if  a>b    then   
+  
+  }else{              else  
+   
+  }                   end if;
+
+
+  if(a>b){            if     a>b  then
+  
+  }else if(a>c){      elsif  a>c  then 
+  
+  }else if(a>d){      elsif  a>d  then
+  
+  }                   end if;
+
+
+  if(a>b){            if     a>b   then 
+  
+  }else if(a>c){      elsif  a>c   then
+  
+  }else if(a>d){      elsif  a>d   then
+  
+  }else{              else 
+  
+  }                   end if;
+
+  6.1.2 举例
+  定义三个整数变量   赋值 
+  从这三个整数变量中 打印最大值 
+  declare
+      var_a    number:=100;
+      var_b    number:=200;
+      var_c    number:=300;
+  begin
+      if var_a < var_b  then
+          if var_b < var_c then
+              dbms_output.put_line(var_c);
+	  else
+              dbms_output.put_line(var_b); 
+	  end if; 
+      else
+          if var_a < var_c then
+              dbms_output.put_line(var_c);
+	  else
+              dbms_output.put_line(var_a); 
+	  end if;   
+      end  if;
+  end;
+  /
+
+  declare
+      var_a    number:=100;
+      var_b    number:=200;
+      var_c    number:=300;
+      var_max  number;
+  begin
+      var_max:=var_a;
+      if var_max < var_b then
+         var_max:=var_b;
+      end if;
+      if var_max < var_c then
+         var_max:=var_c;
+      end if;
+      dbms_output.put_line(var_max);
+  end;
+  /
+  6.1.3  NULL 值的判断
+  declare
+      var_a    number;
+      var_b    number;
+  begin
+      if  var_a < var_b  then
+          dbms_output.put_line('var_a < var_b');
+      elsif var_a > var_b then
+          dbms_output.put_line('var_a > var_b');
+      elsif var_a is  NULL and  
+          var_b is NULL then
+	   dbms_output.put_line('var_a is null 
+	   and var_b is null');
+      elsif var_a = var_b then
+          dbms_output.put_line('var_a = var_b');
+      end if;
+  end;
+  / 
+
+  6.2 循环语句 
+    6.2.1 简单循环
+    loop
+        /* 在这里写循环语句 */ 
+    end  loop;
+    6.2.2 如何结束循环
+    exit   when  结束条件;
+    
+    if  结束条件  then
+       exit;
+    end if;   
+    6.2.3 从1 输出到 10 
+    declare
+        var_i   number:=1;
+    begin
+        loop
+            dbms_output.put_line(var_i);
+	    exit  when  var_i=10;
+	    var_i:=var_i+1;
+	end loop;
+    end;
+    /
+ 
+    6.2.4 while 循环 
+    while   条件   loop
+        /* 循环的代码 */
+
+    end loop;
+    使用while 循环 完成输出 1 到10 的工作?
+    declare
+        var_i   number:=1;
+    begin
+        while  var_i <=10 loop
+            dbms_output.put_line(var_i);
+	    var_i:=var_i+1;
+	end loop;
+    end;
+    /
+  
+    declare
+        var_i   number:=1;
+    begin
+        while  var_i <=10 loop
+            dbms_output.put_line(var_i);
+	    exit  when  var_i=5;
+	    var_i:=var_i+1;
+	end loop;
+    end;
+    /
+
+    6.2.5 for  循环 (智能循环)
+
+    for  变量名  in  a..b loop
+        /* 循环语句 */
+    end loop;
+    
+    写一个从 1 输出到 10
+    begin
+        for  var_a in 1..10 loop
+            dbms_output.put_line(var_a);
+	end loop;
+    end;
+    /
+    写一个从 10 输出到 1
+    begin
+        for  var_a in reverse 1..10 loop
+            dbms_output.put_line(var_a);
+	end loop;
+    end;
+    /
+
+  6.3  goto 语句
+    6.3.1 语法
+    
+        goto  标签名;
+	
+	<<标签名>>
+
+    6.3.2 使用goto 达到从1输出到10的效果
+        
+	declare
+            var_i   number:=1;  
+	begin
+	    <<myloop>>    
+            if  var_i < 11 then
+                dbms_output.put_line(var_i);
+		var_i:=var_i+1;
+		goto  myloop;
+	    end if;
+	    dbms_output.put_line('loop over');
+	end;
+	/
+   6.3.3 使用goto 解决实际问题
+       exit  默认结束当前循环 
+       希望满足条件 就结束外层循环
+
+       begin
+           <<outerloop>>
+           for  x in 1..4 loop
+	       for y in 1..4 loop
+                  dbms_output.put_line(y);
+                  if y=2 then 
+		     exit outerloop;
+		  end if;
+	       end loop;
+	   end  loop;
+       end;
+       /
+  
+       begin          
+           for  x in 1..4 loop
+	       for y in 1..4 loop
+                  dbms_output.put_line(y);
+                  if y=2 then 
+		     goto outerloop;
+		  end if;
+	       end loop;
+	   end  loop;
+	   <<outerloop>>
+	   NULL;
+       end;
+       /

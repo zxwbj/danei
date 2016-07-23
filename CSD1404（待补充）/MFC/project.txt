@@ -1,0 +1,149 @@
+一 VOD视频点播系统(Video On Demands)
+   1  项目描述 
+   是一个典型的C/S架构的应用程序，包括客户端
+   和服务器两部分。服务器包括视频和用户管理模块
+   、网络通信模块。客户端包括网络通信模块和视频
+   播放模块。基于MFC完成界面的设计，并且使用
+   SkinMagic库完成界面的美化。使用ADO的封装
+   类完成数据库的访问和操作。使用socket完成客户
+   端与服务器的通信。使用ActiveX控件即Windows 
+   Media Player完成视频播放功能。
+   2 项目开发
+   2.1 版本管理工具软件
+   团队开发的项目，需要使用版本控制工具，它也是
+   一个c/s架构的产品。微软公司 vss6.0、vss2005等
+   比较流行的和常用的有CVS、SVN等。
+   2.2 VODServer的界面设计
+   2.2.1 在主界面上添加两个控制条。
+   2.2.2 在控制条上添加树控件和对话框
+   2.2.3 在视图中添加DataGrid控件。
+         DataGrid控件铺满视图窗口的客户区，提示
+         在视图的OnSize()函数中处理。
+   2.2.4 使用SkinMagic库完成对界面的美化
+------------------------------------
+day02
+1 VODServer的数据库操作
+  1 设计数据库(Access)
+    1 UserInfo-用户信息表
+    2 TypeInfo-类型信息表
+    3 VideoInfo-视频信息表
+  2 使用ADO组件的封装类
+    2.1 在工程中添加ADO组件封装类的相关文件
+    2.2 COM库的初始化
+    2.3 包含相关头文件
+    2.4 在CMainFrame添加数据库连接对象，并在
+        构造函数中调用ConnectAccess()函数完成数据
+        库的连接。
+    2.5 在DataGrid控件中显示视频信息表
+        2.5.1 在视图类中添加虚函数OnInitialUpdate()
+        2.5.2 在函数中通过绑定的方式将数据显示到控件上    
+    2.6 在控件中显示视频类型信息
+        2.6.0 添加CTypeManager类和CType结构体，
+              并在类中实现GetAllType()函数，函数
+              的作用是从数据库中获取所有的视频类
+              型放到链表中。
+              注意：在CTypeManager类的构造函数中
+              添加参数CAdoConnection *pConn，用于
+              保存当前的活动连接。
+        2.6.1 在树控件中显示
+              1 在CMainFrame类中添加成员函数InitTypeTreeCtrl，
+              在函数中，调用CTypeManager::GetAllType()函数,
+              把数据表中的数据显示到树控件上。
+              2 在CMainFrame的OnCreate()函数中调用
+        2.6.2 在对话框的组合框控件中显示  
+              1 在CDlgVideo类中添加成员函数InitVideoTypeCtrl,
+              在函数中，调用CTypeManager::GetAllType()函数,
+              把数据表的数据显示对话框的组合框控件中
+              2 在CMainFrame的OnCreate()函数中调用
+------------------------------------------
+day03
+一 在DataGrid控件中选择不同的数据项时，把控件中
+   当前行的数据传递给对话框的控件。
+   1 添加DataGrid控件的SelChange消息的处理函数
+   2 在函数中完成数据的传递。
+   
+二 完成对视频信息的增、删和修改
+   1 在工程中添加CVideoManager类和CVideo结构体。
+     并在实现CVideoManager类的相关功能函数。
+   2 在界面调用CVideoManager类的相关函数
+   2.1 "新建"按钮的处理函数
+        2.1.1 清空对话框中控件的数据 
+        2.1.2 将"插入/更新"按钮的文本设置为"插入"
+   2.2 "插入/更新"按钮的处理函数
+        if(视频编号为空)
+        {
+          执行插入操作
+          CVideoManager::InsertVideo
+        }
+        else
+        {
+           执行更新操作
+           CVideoManager::UpdateVideo
+        }
+        重新显示操作后的数据
+   2.3 "删除"按钮的处理函数 
+        执行删除操作
+        CVideoManager::DeleteVideo               
+----------------------------------------------
+day04
+一 VODClient界面设计
+   1 使用SkinMagic实现界面美化
+   2 使用工具条类完成视频列表的显示
+   3 使用Windows Media Player完成视频的显示
+二 VODClient网络通信
+   1 添加网络通信业务逻辑类CClientSocket类
+   1.1 客户端的初始化，包括创建和连接
+       InitClient() 
+   1.2 客户端登录
+       Login()
+   1.3 在主界面显示所有的视频类型
+       GetAllVideoTypes()
+       如何使用一个字符串表示多种类型。可以定义
+       基本格式，例如
+       "古装片,1,战争片,2,喜剧片,3,"
+   1.4 获取某一指定类型下，所有的影片名称和ID
+       GetVideosByTypeID()
+   1.5 播放指定视频ID的视频文件
+       GetMediaData()
+       客户端向服务器发送视频ID->服务器端收到后，
+       在数据库中根据视频ID查找视频的文件路径->
+       打开视频文件，获取视频数据->将数据发送到
+       客户端->客户端接收视频数据，保存到本地->
+       播放。    
+-----------------------------------------
+day05 VODServer的网络通信
+ 1 CNetServer类
+   InitServer()函数中，启动新的线程，完成服务器
+   socket的创建、绑定、监听并且在循环语句中接收
+   客户端连接。一旦收到客户端连接，具体的通信交
+   由CNetClient类完成。
+ 2 CNetClient类-具体的通信的业务逻辑类              
+   Initialize()函数中，启动新的线程，根据接收到
+   的客户端的数据，判断，执行不同的函数。
+   //1 处理客户端登录
+	 BOOL OnLogin();
+   //2 返回所有的视频类型信息
+	 BOOL OnAllVideoTypes();
+	//3 返回指定类型ID的所有视频信息
+	BOOL OnVideosByTypeID();
+	//4处理客户端请求的视频文件
+  BOOL OnMediaData(); 
+  3 界面对CNetServer类的调用
+  3.1  在CMainFrame类中添加成员变量
+  	CNetServer m_NetServer;
+  3.2 在CMainFrame类的OnCreate()函数中，
+    调用m_NetServer.InitServer()函数
+    	        
+        
+   
+                       
+   
+       
+         
+  
+         
+          
+   
+   
+    
+   

@@ -1,0 +1,129 @@
+c++的IO
+一.c++ 中的标准对象
+   cout
+   cin 
+   cerr
+   clog
+
+   缓冲   flush
+   cout   可以重定向
+   cerr   clog  不能重定向
+   system("./a.out > a.txt");
+   find   /   -name=01vtable.cpp 2>/dev/null
+
+二.c++ IO 类结构图
+   istream   ostream     #include <iostream>
+   ifstream  ofstream
+      fstream            #include <fstream>
+   
+   istringstream
+   ostringstream         #include <sstream>
+
+三.格式化IO  和 非格式化IO
+   格式化   有类型的概念
+       int  x;
+       cin >> x;
+       cout << x ;
+   非格式化: 没有类型的概念
+       所有的数据的都当成字符来看
+       
+   格式化会忽略空白   非格式化不会
+
+四.非格式化
+  int get();   // EOF
+  istream& get( char& ch );
+  // 只要流变成NULL 就代表文件结束了  
+
+  ostream& put( char ch );
+
+
+  istream& getline( char* buffer, 
+      streamsize num );
+
+      getline(data,200);
+
+  istream& getline( char* buffer, 
+  streamsize num, char delim );
+
+
+  /* 清空缓冲区 和 流的复位 */
+  clear()   流的复位
+      当流出错时 流对象自动变成NULL指针,需要使用
+      clear()才能恢复流。
+  /* 清理缓冲区中的多少个字符  
+     清理到哪个字符为止*/
+  istream& ignore( streamsize num=1, 
+      int delim=EOF );
+
+  /* 回退一个字符 */ 
+  istream& putback(char c);
+  /* 查看下一个字符 */
+  peek();
+
+五.字符串IO
+  istringstream  数据来源于字符串流对象   
+      //ifstream   
+  ostringstream  把数据写入字符串流对象
+
+  构造函数：
+  无参的构造函数
+  有一个string参数的构造函数
+  
+  运算符
+  <<   >>
+  
+  成员函数:
+  string    str();
+
+
+  string  name="tom";
+  int     age=24;
+  double  salary=5500;
+
+六.文件IO
+  使用 get  put 函数  复制一个文件 
+  ifstream  
+  ofstream  
+
+  关闭流    close() 
+  
+  istream& read( char* buffer, streamsize num );   
+  ostream& write( const char* buffer,
+     streamsize num );
+  
+  streamsize gcount(); 最近一次读到的字符数
+
+  把数据读取到一个缓冲区 大小100字符
+   
+  
+  反复打开文件100次 每次写一个整数 
+  1-100 的数字写入文件 
+
+   
+七.随机文件读写
+  seekp(大小,相对参考位置);
+  seekg(大小,相对参考位置);
+  相对参考位置 
+      ios::beg
+      ios::cur
+      ios::end  
+  
+  读指针 和 写指针是一个 
+
+   tellp()  得到写位置
+   tellg()  得到读位置
+   
+八.写一个程序 把一个文件中的内容读取出来 
+   把每个字符 都和 一个随机的字符进行 ^
+   操作。然后把异或之后的数据写入另一个文件
+   。然后从程序的命令行 传入一个字符对应的
+   数字 进行解密。
+   MD5  SHA  
+   a.out  a.txt   b.txt    
+   a.out  b.txt   c.txt  97 
+   
+
+九.c++ 格式化IO控制
+   cout << hex <<  setw() 
+
+   掌握常用的  因为c语言做的更好

@@ -1,0 +1,465 @@
+set  serveroutput on;
+一.plsql 中如何嵌入sql语句
+   select  要和into 结合使用
+       select  first_name  into  var_name 
+           from s_emp where id=1;
+   dml(insert  delete  update)
+   tcl(commit  rollback  savepoint)
+   可以直接在plsql中使用 
+
+   DDL(create  drop  alter)
+   不能直接在plsql中使用 需要使用动态sql
+二.动态sql
+   2.1 概念
+   在程序执行的过程中  sql语句可以根据条件发
+   生改变。从而达到程序灵活性的目的。
+   2.2 如何实现 
+   把sql语句变成字符串
+   declare
+       sqlstr  varchar2(100);
+   begin
+       sqlstr:='create table  testdsql(id  number)';
+      /* 'create table testdsql (id number,
+         name varchar2(30))' */ 
+       sqlstr:=substr(sqlstr,1,length(sqlstr)-1);
+       sqlstr:=sqlstr||','||'name varchar2(30))';
+       dbms_output.put_line(sqlstr);
+       execute  immediate  sqlstr;
+   end;
+   /
+
+   2.3 DML 可不可以是动态sql?
+   declare
+    sqlstr  varchar2(100):=
+    'insert into testdsql values(100,''testa'')'; 
+   begin
+     dbms_output.put_line(sqlstr);
+   end;
+   /
+
+   declare
+       var_id    number:=100;
+       var_name  varchar2(30):='testa';
+       sqlstr    varchar2(100);
+   begin
+       sqlstr:='insert into testdsql values(';
+       sqlstr:=sqlstr||var_id||','''||var_name
+         ||''')';
+       dbms_output.put_line(sqlstr);
+       execute  immediate  sqlstr;
+       commit;
+   end;
+   /
+
+
+
+   declare
+       var_id    number:=101;
+       var_name  varchar2(30):='testb';
+       sqlstr    varchar2(100);
+   begin
+       sqlstr:=
+       'insert into testdsql values(:b0,:b1)';
+       dbms_output.put_line(sqlstr);
+       execute  immediate  sqlstr using var_id,
+          var_name;
+       commit;
+   end;
+   /
+2.4 select 语句的动态sql
+   select 语句必须是正常的select 其中没有 into
+   必须返回一个结果 只能返回一个结果
+
+   declare
+       var_name  s_emp.first_name%type;
+       sqlstr    varchar2(100); 
+   begin
+     sqlstr:=
+     'select first_name from s_emp where id=1'; 
+     execute  immediate  sqlstr into var_name;
+     dbms_output.put_line(var_name);
+   end;
+   /
+三.游标 
+   3.1 概念
+   用来处理多行数据的结果集。
+   3.2 游标的使用步骤
+      定义游标
+          declare
+              cursor  游标名  is  select 语句;                
+	  begin  
+      打开游标
+          open   游标名;
+      提取数据   处理数据
+          fetch  游标名  into  变量;
+      关闭游标
+          close  游标名;
+  3.3 举例
+      把s_emp 表中所有的数据 放入一个游标中
+      提取前两条数据  打印这些数据 id 
+      first_name salary
+  declare
+      cursor  empcursor is select * from s_emp;
+      var_emp empcursor%rowtype; 
+  begin
+      open    empcursor;
+      fetch   empcursor into  var_emp; 
+      dbms_output.put_line(var_emp.id||':'||
+      var_emp.first_name||':'||var_emp.salary);
+      fetch   empcursor into  var_emp; 
+      dbms_output.put_line(var_emp.id||':'||
+      var_emp.first_name||':'||var_emp.salary);
+      close   empcursor;
+  end;
+  /
+ 3.4 把s_region 中的所有的数据放入一个游标中
+ 然后提取游标的前两条数据  并且打印这两条数据
+ 的信息。
+ declare
+     cursor  regioncursor is 
+         select * from s_region;
+     var_region  regioncursor%rowtype;
+ begin
+     open    regioncursor;
+     fetch   regioncursor into  var_region;
+     dbms_output.put_line(var_region.id||':'||
+     var_region.name);
+     fetch   regioncursor into  var_region;
+     dbms_output.put_line(var_region.id||':'||
+     var_region.name);
+     close   regioncursor;
+ end;
+ /
+
+ declare
+     cursor  regioncursor is 
+         select * from s_region;
+     var_region  regioncursor%rowtype;
+ begin
+     open    regioncursor;
+     /*  结束循环的条件 */
+     loop 
+     fetch   regioncursor into  var_region;
+     dbms_output.put_line(var_region.id||':'||
+     var_region.name);
+     end  loop;
+     close   regioncursor;
+ end;
+ /
+
+ 3.5  游标属性
+ 游标名%found    在游标提取数据时  如果提取到了
+     新数据 则这个属性返回真,否则这个属性返回
+     假。前提是 游标必须处于打开状态 否则这个
+     属性返回非法游标。第二游标必须fetch 否则
+     这个属性返回NULL。
+ 
+ 游标名%notfound  在游标提取数据时 如果提取到了
+     新数据 则这个属性返回假。否则这个属性返回
+     真。前提是 游标必须处于打开状态 否则这个
+     属性返回非法游标。第二游标必须fetch 否则
+     这个属性返回NULL。
+
+      
+
+
+ declare
+     cursor  regioncursor is 
+         select * from s_region;
+     var_region  regioncursor%rowtype;
+ begin
+     open    regioncursor;
+     /*  结束循环的条件 */
+     loop 
+     fetch   regioncursor into  var_region;
+     exit   when  regioncursor%notfound;
+     dbms_output.put_line(var_region.id||':'||
+     var_region.name);
+     end  loop;
+     close   regioncursor;
+ end;
+ /
+3.6 把上面的程序 改成使用while循环 结合
+    found  属性遍历。 
+ declare
+     cursor  regioncursor is 
+         select * from s_region;
+     var_region  regioncursor%rowtype;
+ begin
+     open    regioncursor;
+     /*  结束循环的条件 */
+     fetch   regioncursor into  var_region;
+     while regioncursor%found loop 
+     dbms_output.put_line(var_region.id||':'||
+     var_region.name);
+     fetch   regioncursor into  var_region;
+     end  loop;
+     close   regioncursor;
+ end;
+ /
+ 3.7 游标的其它属性
+    %isopen   游标是否处于打开状态
+        游标打开就返回真 否则返回假
+	打开的游标不能再打开 
+	关闭的游标不能再关闭
+    %rowcount 游标指针偏移量
+ 3.8 for 循环遍历游标 (智能循环)  
+ declare
+     cursor  regioncursor is 
+         select * from s_region;
+ begin
+     for  var_region in regioncursor loop 
+     dbms_output.put_line(var_region.id||':'||
+     var_region.name);
+     end  loop;
+ end;
+ /
+
+ 3.9  带参游标 
+   游标在定义时 可以设定一个参数 在打开游标时
+   可以对这个参数传入相应的值。
+   plsql 中参数的类型 不能加长度修饰
+   但可以使用 %type
+ declare
+     cursor empcursor(var_id number)is select * 
+         from s_emp  where id>var_id;
+     var_emp empcursor%rowtype;
+ begin
+     open   empcursor(20);
+     loop
+         fetch  empcursor  into var_emp;
+	 exit  when  empcursor%notfound; 
+	 dbms_output.put_line(var_emp.id||':'||
+	 var_emp.first_name);
+     end loop;
+     close  empcursor;
+ end;
+ /
+
+ for 循环遍历带参游标 
+ declare
+     cursor empcursor(var_id number)is select * 
+         from s_emp  where id>var_id;
+ begin 
+     for var_emp in empcursor(15) loop
+	 dbms_output.put_line(var_emp.id||':'||
+	 var_emp.first_name);
+     end loop;
+ end;
+ /
+
+3.10  参考游标 
+   这种游标 对应的查询语句 是一条字符串
+   动态sql  +  游标 
+   'select * from  s_emp';
+
+   定义参考游标类型
+   type  类型名 is ref cursor;
+
+   使用参考游标类型 定义游标变量 
+   游标变量    类型名;
+
+   把游标变量名关联到字符串
+   open  游标变量名  for  字符串;
+
+   declare
+       type  myrefcursor  is ref cursor;
+       empcursor   myrefcursor;
+       sqlstr   varchar2(100);
+       var_emp  s_emp%rowtype;
+   begin
+       sqlstr:='select * from s_emp';
+       open  empcursor  for sqlstr;
+       loop
+           fetch  empcursor into var_emp;
+	   exit   when  empcursor%notfound;
+	   dbms_output.put_line(var_emp.id||
+	   ':'||var_emp.first_name);
+       end loop;
+       close  empcursor;
+   end;
+   /
+
+   declare
+       type  myrefcursor  is ref cursor;
+       empcursor   myrefcursor;
+       sqlstr   varchar2(100);
+       var_emp  s_emp%rowtype;
+   begin
+       sqlstr:='select * from s_emp where id>:b0';
+       open  empcursor  for sqlstr using 10;
+       loop
+           fetch  empcursor into var_emp;
+	   exit   when  empcursor%notfound;
+	   dbms_output.put_line(var_emp.id||
+	   ':'||var_emp.first_name);
+       end loop;
+       close  empcursor;
+   end;
+   /
+四.plsql 中的异常 
+   编译时 
+
+   运行时:
+       
+   declare
+       var_name    s_emp.first_name%type; 
+   begin
+       select  first_name into var_name 
+           from s_emp where id>1;
+       dbms_output.put_line('var_name='||':'
+           ||var_name);
+   exception 
+       when   NO_DATA_FOUND   then
+       dbms_output.put_line('have no emp'); 
+       when   too_many_rows   then
+       dbms_output.put_line('too many emp');
+       dbms_output.put_line(SQLCODE||'@'||
+       SQLERRM);
+       when   others          then 
+       dbms_output.put_line('others '); 
+   end;
+   /
+
+   用户自定义异常:
+       定义异常 
+       根据条件抛出 异常
+       捕获异常 
+       处理异常 
+   declare
+       too_many_emp    exception;
+   begin
+       if 1=2 then
+           raise  too_many_emp;
+       end if;
+       dbms_output.put_line('app end!');
+   exception
+       when   too_many_emp  then 
+           dbms_output.put_line
+	   ('many emp exception');    
+   end;
+   /
+
+五.存储过程  procedure
+   5.1 把一组相关的sql语句 和 plsql语句组织到
+   一起 然后给这个逻辑结构起一个名字。
+   5.2 如何建立存储过程
+   定义两个整数变量   赋值 从这两个变量找出
+   最大值,打印。
+   declare
+       var_x   number:=100;
+       var_y   number:=200;
+   begin
+       if var_x < var_y  then
+           dbms_output.put_line(var_y);
+       else
+           dbms_output.put_line(var_x);
+       end if;
+   end;
+   /
+
+   create  or replace   procedure progetmax(
+    var_x  number:=100,var_y  number:=200) 
+   is
+   begin
+       if var_x < var_y  then
+           dbms_output.put_line(var_y);
+       else
+           dbms_output.put_line(var_x);
+       end if;
+   end;
+   /   
+  5.3 如何使用存储过程
+   5.3.1查看存储过程
+   desc   progetmax;
+   /* 查看存储过程源代码 */
+   select  text from  user_source 
+       where  name='PROGETMAX';
+   SQL> desc   progetmax;
+PROCEDURE progetmax
+ Argument Name                  Type                    In/Out Default?
+ ------------------------------ ----------------------- ------ --------
+ VAR_X                          NUMBER                  IN
+ VAR_Y                          NUMBER                  IN
+
+ 参数的名字 
+ 参数的类型  
+ 参数的模式  默认in模式
+ 参数的默认值  
+ 5.3.2  调用存储过程
+ begin
+     progetmax();
+     progetmax(1);
+     progetmax(123,100);
+     progetmax(1,2);
+     /* 参数的名字赋值 */
+     progetmax(111,var_y=>0);
+     progetmax(var_y=>0);
+ end;
+ /
+ 5.4 如何带回存储过程内部的信息
+ 输出模式的参数 
+ in     负责给存储过程传入值的
+ out    负责给存储过程传出值的
+ in out 既负责传入值 又负责传出值 
+    带out修饰的参数 必须是 变量 
+    
+  void   getnum(int* x){
+     x=1000;
+  }
+  x=1;
+  getnum(x);
+  x
+
+  create  or replace   procedure 
+  progetmax_sum(
+    var_x number,var_y number,var_z out number) 
+   is
+   begin
+       if var_x < var_y  then
+           dbms_output.put_line(var_y);
+       else
+           dbms_output.put_line(var_x);
+       end if;
+       var_z:=var_x+var_y;
+   end;
+   /
+   declare
+       var_z   number:=0;
+   begin
+       progetmax_sum(1,9526,var_z);
+       dbms_output.put_line(var_z);
+   end;
+   /
+
+ 5.5 设计一个存储过程 传入两个整数参数
+  打印两个参数的最大值,并且把两个参数的
+  和 放入第二个参数中。
+  调用这个存储过程 验证功能！
+  create  or replace   procedure 
+  progetmax_sum(var_x number,var_y in out number) 
+   is
+   begin
+       if var_x < var_y  then
+           dbms_output.put_line(var_y);
+       else
+           dbms_output.put_line(var_x);
+       end if;
+       var_y:=var_x+var_y;
+   end;
+   / 
+
+   declare
+       var_z   number:=9526;
+   begin
+       progetmax_sum(1,var_z);
+       dbms_output.put_line(var_z);
+   end;
+   /
+ 5.6  1+2+3+4+....+n
+      n=10   55
+      n=100  5050
+   写一个存储过程 设计一个参数n 代表从1加到
+   的数据 把前n项的和放入第二个参数中！
+   验证这个存储过程的功能！
+   

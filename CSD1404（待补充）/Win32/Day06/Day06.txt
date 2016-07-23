@@ -1,0 +1,106 @@
+//设置菜单项 勾选/非勾选 状态
+DWORD CheckMenuItem(
+  HMENU hmenu,        // 菜单句柄
+  UINT uIDCheckItem,  // 菜单项ID或菜单项位置（索引）
+  UINT uCheck         // 具体状态
+);
+uCheck：
+     MF_BYCOMMAND - uIDCheckItem参数必须填写菜单项ID
+     MF_BYPOSITION - uIDCheckItem参数必须填写菜单项位置
+     MF_CHECKED - 菜单项勾选
+     MF_UNCHECKED - 菜单项非勾选
+//设置菜单项 可用/不可用/灰色 状态
+BOOL EnableMenuItem(
+  HMENU hMenu,         // 菜单句柄
+  UINT uIDEnableItem,  // 菜单项ID或菜单项位置（索引）
+  UINT uEnable         // options
+);
+uEnable：
+MF_BYCOMMAND - uIDEnableItem参数必须填写菜单项ID
+MF_BYPOSITION - uIDEnableItem参数必须填写菜单项位置
+MF_DISABLED
+MF_ENABLE
+MF_GRAYED
+
+//删除菜单项
+BOOL DeleteMenu(
+  HMENU hMenu,     // 菜单句柄
+  UINT uPosition,  // 菜单项ID或菜单项位置
+  UINT uFlags      // 决定uPosition参数到底填写什么
+);
+
+//将客户区坐标系下的坐标 转换为 屏幕坐标系下的坐标
+BOOL ClientToScreen(
+  HWND hWnd,       // 窗口句柄
+  LPPOINT lpPoint  // [IN/OUT]
+                  输入（填写）客户区坐标系下的一个坐标
+                  输出   屏幕坐标系下的坐标
+);
+
+
+
+
+
+             CL.EXE
+.c/.cpp------------>.obj|
+                                    |  LINK.EXE
+           RC.EXE              |----------------->.exe....
+.rc----------------->.res|
+
+
+
+MAKEINTRESOURCE - 将数字形式的资源ID转换为字符串形式的
+                                    资源ID
+
+   MAKEINTRESOURCE(IDR_MENU1);
+//在窗口中绘制一个.ICO为后缀的图片
+BOOL DrawIcon(
+  HDC hDC,      // 绘图设备句柄（BeginPaint返回值）
+  int X,        // 水平坐标
+  int Y,        // 垂直坐标
+  HICON hIcon   // 图标句柄
+);
+
+
+
+
+GetCursorPos - 获取鼠标光标的位置
+BOOL GetCursorPos(
+  LPPOINT lpPoint   // 返回光标的位置（屏幕坐标系下）
+);
+
+ScreenToClient
+
+GetClientRect - 获取窗口边界信息 （客户区坐标系下）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

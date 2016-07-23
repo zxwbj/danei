@@ -1,0 +1,47 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql  begin declare section;
+		    char userpasswd[30]="openlab/open123";
+				int  id=2;
+				char name[30]="test2";
+		exec sql  end   declare section;
+		exec sql  connect:userpasswd;
+		/* DDL create table  */
+		exec sql  create  table  testprocsql(
+				id  number  constraint 
+				    testprocsql_id_pk primary key,
+				name  varchar2(30));
+		if(!sqlca.sqlcode){
+		    printf("create table success!\n");
+		}else{
+		    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+		}
+    /* DML   insert */
+		exec sql  insert into  testprocsql 
+				values(1,'test1');
+		if(!sqlca.sqlcode){
+		    printf("insert  data success!\n");
+		}else{
+		    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+		}
+		exec sql insert into testprocsql 
+				values(:id,:name);
+    if(!sqlca.sqlcode){
+		    printf("insert data success!\n");
+		}else{
+		    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+		}
+		/* tcl */
+		exec sql commit;
+    /* select  */
+		exec sql select name into :name 
+				from testprocsql  where id=1;
+    if(!sqlca.sqlcode){
+		    printf("name=%s\n",name);
+		}else{
+		    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+		}
+		exec sql commit work release;
+}
+

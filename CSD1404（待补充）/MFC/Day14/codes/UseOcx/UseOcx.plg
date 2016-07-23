@@ -1,0 +1,99 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: UseOcx - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Debug/UseOcx.res" /d "_DEBUG" /d "_AFXDLL" "E:\csd1404\Day14\codes\UseOcx\UseOcx.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE49.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/UseOcx.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ   /c 
+"E:\csd1404\Day14\codes\UseOcx\UseOcx.cpp"
+"E:\csd1404\Day14\codes\UseOcx\UseOcxDlg.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpclosedcaption.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpplaylist.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpcdromcollection.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmperroritem.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpmedia.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpnetwork.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpplaylistcollection.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpstringcollection.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpmediacollection.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpcdrom.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpplaylistarray.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpcontrols.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpdvd.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpplayer4.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpplayerapplication.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmpsettings.cpp"
+"E:\csd1404\Day14\codes\UseOcx\wmperror.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE49.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE4A.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/UseOcx.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ   /c 
+"E:\csd1404\Day14\codes\UseOcx\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE4A.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE4B.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/UseOcx.pdb" /debug /machine:I386 /out:"Debug/UseOcx.exe" /pdbtype:sept 
+.\Debug\UseOcx.obj
+.\Debug\UseOcxDlg.obj
+.\Debug\StdAfx.obj
+.\Debug\UseOcx.res
+.\Debug\wmpclosedcaption.obj
+.\Debug\wmpplaylist.obj
+.\Debug\wmpcdromcollection.obj
+.\Debug\wmperroritem.obj
+.\Debug\wmpmedia.obj
+.\Debug\wmpnetwork.obj
+.\Debug\wmpplaylistcollection.obj
+.\Debug\wmpstringcollection.obj
+.\Debug\wmpmediacollection.obj
+.\Debug\wmpcdrom.obj
+.\Debug\wmpplaylistarray.obj
+.\Debug\wmpcontrols.obj
+.\Debug\wmpdvd.obj
+.\Debug\wmpplayer4.obj
+.\Debug\wmpplayerapplication.obj
+.\Debug\wmpsettings.obj
+.\Debug\wmperror.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE4B.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+UseOcx.cpp
+UseOcxDlg.cpp
+wmpclosedcaption.cpp
+wmpplaylist.cpp
+wmpcdromcollection.cpp
+wmperroritem.cpp
+wmpmedia.cpp
+wmpnetwork.cpp
+wmpplaylistcollection.cpp
+wmpstringcollection.cpp
+wmpmediacollection.cpp
+wmpcdrom.cpp
+wmpplaylistarray.cpp
+wmpcontrols.cpp
+wmpdvd.cpp
+wmpplayer4.cpp
+wmpplayerapplication.cpp
+wmpsettings.cpp
+wmperror.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+UseOcx.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

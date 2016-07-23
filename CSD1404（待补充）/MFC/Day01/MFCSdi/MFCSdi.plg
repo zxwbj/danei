@@ -1,0 +1,41 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MFCSdi - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1E8.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/MFCSdi.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ   /c 
+"F:\MFC\Day01\MFCSdi\MFCSdi.cpp"
+"F:\MFC\Day01\MFCSdi\MFCSdiView.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1E8.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1E9.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/MFCSdi.pdb" /debug /machine:I386 /out:"Debug/MFCSdi.exe" /pdbtype:sept 
+.\Debug\MFCSdi.obj
+.\Debug\StdAfx.obj
+.\Debug\MainFrm.obj
+.\Debug\MFCSdiDoc.obj
+.\Debug\MFCSdiView.obj
+.\Debug\MFCSdi.res
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1E9.tmp"
+<h3>Output Window</h3>
+Compiling...
+MFCSdi.cpp
+Generating Code...
+Skipping... (no relevant changes detected)
+MFCSdiView.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+MFCSdi.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

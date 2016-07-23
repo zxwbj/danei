@@ -1,0 +1,35 @@
+BOOL CopyFile(
+  LPCTSTR lpExistingFileName, // 源文件路径（被复制的文件）
+  LPCTSTR lpNewFileName,      // 目的地路径
+  BOOL bFailIfExists          // 是否覆盖（TRUE-不覆盖 / FALSE-覆盖）
+);
+
+
+HANDLE OpenFileMapping(
+  DWORD dwDesiredAccess,  // 访问方式
+  BOOL bInheritHandle,    // 继承标识
+  LPCTSTR lpName          // 内存映射文件名称
+);//返回内存映射文件的句柄
+
+
+MapViewOfFile - 内存/硬盘 和本进程地址建立映射关系
+
+printf
+
+UnmapViewOfFile
+
+CloseHandle
+
+
+
+
+
+
+
+
+
+
+
+
+
+

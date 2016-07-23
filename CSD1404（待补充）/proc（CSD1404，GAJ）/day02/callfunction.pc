@@ -1,0 +1,20 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql  begin declare section;
+		    char userpasswd[30]="openlab/open123";
+				int  x=9526;
+				int  y=1;
+				int  z=0;
+		exec sql  end   declare section;
+		exec sql connect:userpasswd;
+		exec sql execute
+				begin
+				    :z:=getMaxAndSum(:x,:y);
+				end;
+		end-exec;
+    printf("z=%d\n",z);
+    printf("y=%d\n",y);
+    exec  sql  commit work release;
+}
+

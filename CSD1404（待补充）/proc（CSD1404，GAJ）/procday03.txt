@@ -1,0 +1,213 @@
+
+
+十三.数据库的连接
+    本地连接:
+    exec sql connect:用户名/密码;
+    exec sql connect:用户名  
+        indentified by:密码;
+    连接的服务名是 echo $ORACLE_SID
+    
+    远程连接:
+
+    $ORACLE_HOME/network/admin/tnsnames.ora
+    CAH_192.168.0.26 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.26)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = tarena)
+    )
+  )
+
+  程序中如果有多个数据库连接  则需要使用标签
+  区分连接。
+  
+  exec sql  connect:userpasswd at:标签名
+      using :远程数据库描述;
+  exec sql  connect:userpasswd at:标签名;
+  只要在后面 每个sql操作前
+  加上 exec sql  at:标签名  sql操作。
+
+  第二种远程连接方式
+   $ORACLE_HOME/network/admin/tnsnames.ora
+    CAH_192.168.0.26 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.26)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = tarena)
+    )
+  )
+
+  database  link
+  
+  create  database  link  my23to26link connect 
+     to  openlab  identified by  open123
+     using 'CAH_192.168.0.26';
+
+   create  database  link  my23to26link connect 
+     to  openlab  identified by  open123
+     using '(DESCRIPTION =
+    (ADDcd RESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.26)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = tarena)
+    )
+  )';
+
+  /* 写一个proc程序 访问23数据中的 s_emp表
+     把id=1 的数据放入 一个变量中 打印
+     这个数据。并且使用 my23to26link 这个数据
+     库链接 去查询对应数据库上的 id=1
+     的first_name 并打印输出。并且使用这个
+     链接去更新对应数据库上 的 s_dept 表中的
+     id=50的name  更新成  test50 */
+  
+
+十四.proc 中的错误处理
+    /* 通过返回值 局部处理 */
+    sqlca.sqlcode  来判断sql语句执行是否正常
+    sqlca.sqlerrm.sqlerrmc 
+
+    /* 全局错误处理方式 */
+    exec sql  whenever 条件  动作;
+    条件:sqlerror  notfound  sqlwarning 
+    动作:do  函数名();
+         do  break; //结束循环 
+	 continue;
+	 stop;
+	 goto 标签;
+
+   exec sql  whenever sqlerror  
+      do processError();
+   void  processError(){
+       /* 当错误处理函数 本身出现sql错误时
+          就忽略sql错误 */
+       exec sql whenever sqlerror continue;
+       exec sql insert into logtable...;
+   }
+   exec sql  whenever sqlerror  
+      do processError();
+   exec sql insert into ...;
+
+
+十五.proc  中的数据操作
+   15.1 可以使用一个变量 操作单行单列
+   exec sql  select  first_name  
+       into :var_name
+       from s_emp where id=1;
+       
+   15.2 可以使用多个变量 操作单行多列
+   exec sql  select id, first_name,salary  
+       into :var_id,:var_name,:var_salary
+       from s_emp where id=1;
+   15.3 使用结构体操作单行 多列
+   struct  {
+       int  id;
+       char name[30];
+       double salary;
+   }emp;
+ 
+   struct  emp{
+       int  id;
+       char name[30];
+       double salary;
+   }emp; 
+
+   typedef struct  emp{
+       int  id;
+       char name[30];
+       double salary;
+   }emp;
+ 
+   /* 定义一个结构体 保存 s_emp 表中
+      id=25 的  id   first_name salary 
+      start_date 入职日期要求按照 
+      'yyyy-mm-dd hh24:mi:ss' 的格式显示 */
+
+   int  t=1000;
+   转换成对应的日期字符串 如下:
+   "1970-01-01 08:16:40"
+
+  15.4 数组类型  
+    结构体数组  
+    把s_emp 表中所有的 id  first_name salary
+    放入一个结构体数组中 然后把这个数组的
+    数据放入一个提前建立好的表中。
+  
+  15.5 proc中的游标 
+    15.5.1 游标的使用步骤
+    声明游标 
+        exec sql declare  游标名  cursor
+	    for  select 语句; 
+    打开游标
+        exec sql open  游标名;
+    提取数据  处理数据
+        exec sql fetch  游标名 into 变量;
+    关闭游标
+        exec sql close 游标名;
+
+   15.5.2 举例
+   把s_emp 表中 所有的id  first_name salary
+   放入一个游标中。然后提取这个游标中的前
+   两条数据 并打印这两条数据的信息。
+
+   15.5.3 提取游标中所有的数据
+   exec  sql   whenever  notfound  do break;
+   15.5.4 滚动游标 
+   可以不按照顺序 提取数据 
+   scroll 
+        fetch last    最后一行 
+	      first   第一行
+	      prior   当前行的前一行
+	      next    当前行的后一行
+	      current 当前行
+	      relative n  n是正数就向后
+	                  n是负数就向前 
+              absolute  n  决对的第几行 
+
+ 十六.动态sql
+  16.1 只能非select语句
+       不能有占位符   
+       "create table  testprocdsql(id  number \
+       primary key,name varchar2(30))"
+   
+       exec sql  execute  immediate :sqlstr;
+  16.2 只能是非select语句
+       可以有占位符
+
+    "insert  into testprocdsql values(1,'a')"
+    "insert  into testprocdsql values(2,'a')"
+    char  sqlstr[100]=
+    "insert  into testprocdsql values(:b0,:b1)";
+
+    对有占位符的字符串先进行预处理
+    exec sql prepare s from :sqlstr;
+    exec sql execute s using 值1,值2;
+  16.3 能且只能是select语句
+       可以有占位符
+   char  sqlstr[100]=
+   "select id,first_name,salary from s_emp
+      where  id>:b0";
+   动态sql2 + 游标 
+
+ 十七.和proc++ 相关的预编译选项
+  oname  输出文件名 
+         c语言的实现文件以.c 结尾
+	 而c++ 推荐使用.cpp 结尾
+  parse  默认是full  c语言的解析方式
+         =partia   c++语言的解析方式 
+	          不推荐使用
+	 =none  c++推荐
+  code   默认是 ansi_c 
+         =cpp   c++代码风格
+	 (要求所有的宿主变量都放入申明区)
+  proc ***.pc oname=***.cpp code=cpp parse=none
+  g++  ***.cpp   -lclntsh
+  

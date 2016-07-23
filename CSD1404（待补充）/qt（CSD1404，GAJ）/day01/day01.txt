@@ -1,0 +1,153 @@
+一.什么是qt
+   基于c++ 语法的  
+   一个专注于图形界面  其它方面也很强的
+   一个跨平台的
+   艺术级别的图形框架 
+
+二.qt的历史
+   91 起步
+   2005  qt4.0
+   2008  nokia 收购
+   2009  开源   
+         qt-project.org 
+
+三.qt的编程环境 
+   3.1 qt的开发工具 
+       assistant   帮助手册
+       designer    设计器
+                   可见即所得的界面编辑器 
+                   得到的界面文件是 ***.ui
+       qmake  -version  得到qt版本
+       qmake  -project  可以把项目的源文件 组织
+                    成项目描述文件  ***.pro
+       qmake          根据项目描述文件 
+                      得到makefile
+       make           根据makefile 得到目标
+       
+       uic            把ui文件转换成 .h 文件
+       
+       qtcreator      集成开发工具 
+
+   3.2 qt的头文件
+       /usr/include/qt4/
+       按照工具 把头文件划分了模块
+           QtNetWork  QtXml  QtSql  QtOpenGL
+	   QtCore  QtGui 
+       一个类对应一个头文件  头文件的名字 和
+           类型名相同。
+   3.3 qt的库文件 
+       qt的库文件就是对头文件的分模块实现
+       /usr/lib/i386-linux-gnu
+
+四.第一个qt程序
+   一个程序 对应一个项目 
+    
+   1.qmake   -project 
+     得到 .pro 文件 
+   2.qmake   
+     得到makefile
+   3.make  
+     得到执行文件 
+
+   g++   ***.cpp   -I头文件位置  -l库名  
+       -L库的位置
+
+五.如何使用帮助文档 
+   5.1 在索引处搜索   对应的类  进入类的说明 
+
+   5.2 可以获知类所属的模块 
+       #include <QLabel>
+       #include <QtGui/QLabel>
+   5.3 类的继承关系 
+       继承自哪个类
+       被哪些类继承
+   5.4 成员变量 
+   5.5 构造函数 
+       构建一个对象时 所涉及到的参数
+
+   5.6 成员函数
+       完成某一个功能的函数 
+   5.7 从父类继承的成员函数 
+
+   5.8 槽函数
+       自己类对应的槽函数  父类的槽函数
+       public slots:
+       void   setText(QString msg);
+   5.9 信号函数  signals 
+       自己类对应的信号函数  父类的信号函数
+       public:signals:
+       void  clicked();
+       信号函数 只需要声明 不需要实现 因为编译器
+       会自动实现信号函数。
+   5.10 保护函数
+       大部分是事件处理函数
+       
+   5.11 静态函数 和 静态成员
+       不需要对象就可以调用
+   5.12 类的详细说明 
+       
+   
+
+六.中文的显示
+   QTextCodec
+   编码:
+   asci ascii  GBK  utf-8   unicode 
+
+   创建一个 QTextCodec 对象
+   QTextCodec *  codecForName(const char* name);
+     
+   把数据转化成 unicode编码
+   toUnicode(const char* msg)
+
+   
+七.信号和槽机制 
+   
+   QPushButton    *qpush
+   QLabel         qlab
+
+   QObject 类型中有一个静态函数 可以
+   完成两个毫不相干的对象的连接。
+   bool   connect(
+       const QObject* sender,
+       const char   *signal,
+       const QObject* reciver,
+       const char   *method
+   ); 
+
+   sender  信号的发送者的地址
+   signal  信号函数 
+           SIGNAL(信号函数名())
+   
+   reciver 信号的接收者的地址
+   method  信号的处理函数 (一般是槽函数)
+           SLOT(槽函数名())
+	   
+   QPushButton  找一个信号函数 可以代表点击
+           void   clicked();
+   QLabel       中找一个槽函数 可以代表关闭
+           bool   close();
+
+
+
+八.父窗口 
+   8.1 如果一个窗体没有父窗口  则这个窗体就
+   成为一个独立的窗体。
+   但如果给一个窗体 指定了父窗口 则这个窗体
+   就停靠在父窗口上。
+   8.2 父窗口 必须是QWidget类型 或者子类型 
+   QMainWindow     QDialog
+   
+   8.3 如何给一个组件指定父窗口?
+   构建对象时 通过参数指定  指定父窗口的地址
+   
+   8.4 如何修改组件的大小
+   resize(x,y);
+
+   8.5 如何移动组件的位置
+   move(x,y);
+   把按钮对象 移动到 150 500 位置
+
+九.调整值
+   QSlider   滑块类
+   QSpinBox  微调框类 
+

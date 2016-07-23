@@ -1,0 +1,28 @@
+long a = 1453435;
+
+a & 0x0000FFFF
+
+a >> 16  &  0x0000FFFF
+
+int x = LOWORD(lParam);
+int y = HIWORD(lParam);
+
+
+
+
+
+SendMessage(...)
+{
+   经过一系列匹配找到窗口处理函数
+   return WndProc(....);
+}
+
+
+
+
+
+
+
+
+
+

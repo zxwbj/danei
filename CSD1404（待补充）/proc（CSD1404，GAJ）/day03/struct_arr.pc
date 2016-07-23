@@ -1,0 +1,43 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql  begin declare section;
+		    char userpasswd[30]="openlab/open123";
+		    struct emp{
+				    int  id;
+						char name[30];
+						double salary;
+				};
+        struct  emp  datas[50];
+		exec sql  end   declare section;
+		exec sql connect:userpasswd;
+    exec sql create table test1404empa(
+			  id   number primary key,
+				name varchar2(30),
+				salary number
+		);
+    if(!sqlca.sqlcode){
+		    printf("create table success!\n");
+		}else{
+		    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+		}
+		/* 把数据放入数组中 */
+		exec sql  select id,first_name,salary
+				into  :datas from s_emp;
+    int i=0;
+		/* 插入数据 */
+		int loopcount=sqlca.sqlerrd[2];
+		if(50==loopcount){
+				/* 数组装满 就一次性放入 */
+				exec sql insert into test1404empa
+						values(:datas);
+		}else{
+		    for(i=0;i<loopcount;i++){
+        exec sql  insert into test1404empa 
+				values(:datas[i]);
+        }
+		}		
+		exec sql commit;
+    exec sql commit work release;
+}
+

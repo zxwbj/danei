@@ -1,0 +1,212 @@
+回顾：
+   Oracle SQL语句：Select查询语句、DML、DDL、事务处理语句、DCL
+   主体是Select查询语句，昨天讲了4个子句：
+   Select 字段/表达式/别名
+   From 表名/视图名/子查询
+   Where 查询的条件  AND/OR 第N个条件
+   Order by 排序的条件
+  
+今天：
+   Oracle的函数 - 单行函数、多行函数(分组函数)
+   多表查询
+   
+    函数分为单行函数和多行函数，单行函数是一条输入对应一条输出，多行函数是多条输入对应一条输出，多行函数又叫分组函数。先研究一下单行函数。单行函数分为：
+    字符函数、数值函数、日期函数、转换函数、其他函数
+    字符函数：
+      lower() - 把所有的字母转换成全小写
+      upper() - 把所有的字母转换成全大写
+      initcap() -  每个单词的首字母大写，其他小写
+      substr() - 截取子串(第一个参数是被截取的字符串,第二个参数是起始位置,第三个参数是截取长度)
+      length() - 字符串的长度
+    Oracle中，有一个叫dual的虚表，里面只有一个字段，而字段的类型可以改变。
+     select 1+1 from dual;
+     select sysdate from dual; -- sysdate代表当前时间
+     select lower('AbCd') from dual;
+     select upper('AbCd') from dual;
+     select length('AbCd') from dual;
+     select substr('AbCd',2,3) from dual;
+  SQL练习：
+    使用字符函数实现 查找s_emp表中first_name包含an的所有员工信息。(查询条件只需要一个)
+    select id,first_name,salary from s_emp
+    where lower(first_name) like lower('%an%');
+   
+  数值函数：
+    trunc() - 截取函数，去掉，无进位
+    round() - 四舍五入函数
+   select ROUND (45.923, 2) from dual;	45.92
+   ROUND (45.923, 0)	    46
+   ROUND (45.923, -1)	     50
+   TRUNC (45.923, 2)		45.92
+   TRUNC (45.923)		     45
+   TRUNC (45.923, -1)	     40
+
+ 日期函数 - Oracle的日期
+   round() trunc() 也可以用于日期的四舍五入或截取。
+   Oralce的日期 由 7部分组成，世纪、年、月、日、小时、分、秒，如果两个日期想相等，这7个组成部分必须全部相等。其中，秒的精确度还更精准(不只是到秒)，因此两个日期相等是很困难的。日期的处理(查询、增加、修改)经常需要使用转换函数。
+  
+  转换函数 - 字符和数值类型之间的转换    字符和日期类型之间的转换，没有日期和数值之间的直接转换。
+   字符和数值的转换函数： (用的不是很多) 
+       to_char()  -  数值转字符
+       to_number() - 字符转数值
+       to_char（数值,'格式'）
+       其中格式可以包含：
+        9 - 代表有数字就写数字，没数字就空着，小数点后面也补0
+        0 - 代表有数字就写数字，没数字写0
+        $－美元符号
+　　 L - 本地货币符号
+        .  - 小数点
+        ,  - 千分位
+     select to_char(1234.5678,'$99,999.9999')
+     from dual;
+     select to_char(1234.5678,'$99,999.99999')
+     from dual;
+     select to_char(1234.5678,'$00,000.00000')
+     from dual;
+     to_number('$1,234.5678','$9,999.9999')
+     select to_number('$1,234.5678','$9,999.9999')
+     from dual;
+   字符和日期的转换函数：(用的非常多)
+      to_char() - 日期转字符（日期做查询条件必用）
+      to_date() - 字符转日期 (新增/修改的数据包括日期)
+     to_char(日期,'日期格式')
+     其中，日期格式包括：
+       y  :   一位年 yyyy 四位年
+       m :   一位月 mm 二位月
+       d ： 一位日  dd  二位日
+       hh24 ： 二位 24小时制的小时(0-23)
+       mi  ： 分钟
+       ss   ： 秒
+     select sysdate from dual;
+     select to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+     from dual;
+     select to_char(sysdate,
+      'YYYY-MM-DD HH24:MI:SS') from dual;
+    注：在日期格式中，大小写一样的效果。
+    select to_char(sysdate,'MM') from dual;
+      to_char() to_date() 能解决数据库本身语言不同的问题
+     to_date(字符串,'日期格式')
+     to_date('2014-05-06','yyyy-mm-dd')
+     select to_date('2014-05-06','yyyy-mm-dd') from
+     dual;
+  单行函数中必须会的函数：
+    nvl() lower() upper() substr() length() round()
+    to_char() to_date()
+  单行函数之间可以无限次的嵌套。
+  SQL练习：
+    1 查询所有员工的id，first_name和在职时间(以天数为单位)。
+    select id,first_name,sysdate-start_date 
+    from s_emp;
+    select id,first_name,to_char(start_date,
+    'yyyy-mm-dd' ) from s_emp;
+    2 查询入职时间在1991年2月到1992年2月之间的所有员工的信息，包括：id，first_name,入职时间
+     select id,first_name,to_char(start_date,
+    'yyyy-mm-dd' ) joindate from s_emp
+     where to_char(start_date,'yyyy-mm') between 
+     '1991-02' and '1992-02'
+     order by joindate;
+    select round(nvl(commission_pct,0)) money 
+    from s_emp;
+
+  多表连接 - 数据库笔试中 必考点
+   显示所有员工id，first_name和部门名称 
+    id，first_name来自于s_emp，部门名称s_dept
+   如果查询的数据来自于多张表，就要使用 多表连接 做查询。
+   select s_emp.id , s_dept.name,
+   s_emp.dept_id,s_dept.id 
+   from s_emp,s_dept;  -- 无效的查询结果,形成笛卡尔积
+  笛卡尔积中的大多数数据都是无效的，需要进行筛选，条件是：s_emp.dept_id = s_dept.id
+   select s_emp.id , s_dept.name,
+   s_emp.dept_id,s_dept.id 
+   from s_emp,s_dept 
+   where s_emp.dept_id = s_dept.id; 
+  用别名简化：
+   select e.id , d.name,e.dept_id,d.id 
+   from s_emp e,s_dept d
+   where e.dept_id=d.id; 
+  多表连接一定是带条件的，这个条件叫连接条件。如果连接n张表，至少需要n-1个连接条件。
+  多表连接的格式：
+   select table1.col1,...,table2.col1,...
+   from table1,table2 ...
+   where table1.col 运算符 table2.col ...;
+ 其中，table1，table2可以使用别名简化。如果字段名称不重复，表名. 可以省略不写。
+   select e.id , name,dept_id,d.id 
+   from s_emp e,s_dept d
+   where dept_id=d.id;
+
+ 多表连接时，连接方式有4种：
+   等值连接，用 等号连接(两个表中的两个字段相等)。 
+   非等值连接，用不是等号的方式进行连接。
+   外连接，在等值连接的基础上，额外多显示一些数据。
+   自连接，用等值连接的方式把一张表看成两张表进行连接
+ 多表连接90% 都是等值连接 或外连接。
+   非等值连接：
+    desc salgrade; -- 薪水等级表
+    select * from salgrade;
+   查询所有员工的id,first_name,salary和薪水等级。
+   select id,first_name,salary,grade
+   from s_emp,salgrade
+   where salary between losal and hisal;
+   等值连接：
+    SQL练习：(三表连接)
+    有三张表：s_emp(员工)/s_dept(部门)/s_region(区域)
+    select * from s_region;
+    查询所有员工的信息，包括：员工编号，first_name,部门名称，区域名称
+   select e.id,e.first_name,d.name,r.name 
+   from s_emp e,s_dept d,s_region r
+   where e.dept_id = d.id and d.region_id = r.id;
+  从Oracle9i开始，数据库多表连接有新的写法(老的也能用)，遵循SQL99规范。
+  新的写法是 表a join 表b。
+    select e.id , name,dept_id,d.id   -- 笛卡尔积的新写法
+    from s_emp e cross join s_dept d; -- cross join
+  平常的连接 表a join 表b on (连接条件);
+   select e.id , name,dept_id,d.id  -- join 表 on (条件)
+   from s_emp e  join s_dept d
+   on (dept_id=d.id);
+
+  a join b on () join c on() -- 多个表连接
+  插入两条数据：
+  insert into s_emp(id,first_name,last_name,salary) 
+  values (99,'zhang','fei',4000.0);
+  insert into s_dept values(99,'shu',4);
+  commit;
+  select id,first_name,salary,dept_id from s_emp;
+  select * from s_dept;
+  外连接 - 等值连接可能会丢失一些不匹配的数据。
+   如果想显示所有的员工信息，包括匹配和不匹配的，等值连接无法实现，外连接可以实现。外连接的写法就是在等值连接= 的左边或右边加上(+)即可，不可以两边都加。
+   select e.id , name,dept_id,d.id 
+   from s_emp e,s_dept d
+   where dept_id=d.id;   -- 等值连接
+   select e.id , name,dept_id,d.id 
+   from s_emp e,s_dept d
+   where dept_id(+)=d.id;  -- 外连接
+   select e.id ,first_name,name,dept_id
+   from s_emp e,s_dept d
+   where dept_id=d.id(+);  -- 外连接
+  (+)放在a表端，表b中不匹配的数据就会显示出来。
+   两边都用(+) 不行： 
+   select e.id ,first_name,name,dept_id
+   from s_emp e,s_dept d
+   where dept_id(+)=d.id(+);
+  外连接的第二种写法：
+    outer join - 外连接
+   select e.id , name,dept_id,d.id 
+   from s_emp e left outer join s_dept d
+   on (dept_id=d.id); -- 左外连接
+   select e.id , name,dept_id,d.id 
+   from s_emp e right outer join s_dept d
+   on (dept_id=d.id); -- 右外连接
+   outer join 支持 两个表中不匹配都显示出来
+   select e.id , name,dept_id,d.id 
+   from s_emp e full outer join s_dept d
+   on (dept_id=d.id); -- 全外连接
+ 
+  自连接 - 同一张表做连接。
+    select id,first_name,manager_id from s_emp;
+   查询所有员工的id,first_name,管理者ID,管理者名字
+   从同一张表中要取两轮数据，解决方案 自连接。自连接就是用别名把一张表看成两张表，然后用多表连接解决问题。
+   select e.id,e.first_name,e.manager_id,
+   m.first_name manager_name
+   from s_emp e,s_emp m
+   where e.manager_id = m.id(+);
+
+作业：SQL 看一遍，敲五遍。

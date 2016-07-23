@@ -1,0 +1,90 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: VODClient - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPB.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"../../bin/client/" /Fp"../../bin/client/VODClient.pch" /Yu"stdafx.h" /Fo"../../bin/client/" /Fd"../../bin/client/" /FD /GZ /c 
+"F:\VODDev\SRC\VODClient\VODClient.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPB.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPC.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"../../bin/client/VODClient.pdb" /debug /machine:I386 /out:"../../bin/client/VODClient.exe" /pdbtype:sept 
+\VODDev\bin\client\ClientSocket.obj
+\VODDev\bin\client\DlgLogin.obj
+\VODDev\bin\client\MainFrm.obj
+\VODDev\bin\client\scbarg.obj
+\VODDev\bin\client\sizecbar.obj
+\VODDev\bin\client\StdAfx.obj
+\VODDev\bin\client\VODClient.obj
+\VODDev\bin\client\VODClientDoc.obj
+\VODDev\bin\client\VODClientView.obj
+\VODDev\bin\client\wmpcdrom.obj
+\VODDev\bin\client\wmpcdromcollection.obj
+\VODDev\bin\client\wmpclosedcaption.obj
+\VODDev\bin\client\wmpcontrols.obj
+\VODDev\bin\client\wmpdvd.obj
+\VODDev\bin\client\wmperror.obj
+\VODDev\bin\client\wmperroritem.obj
+\VODDev\bin\client\wmpmedia.obj
+\VODDev\bin\client\wmpmediacollection.obj
+\VODDev\bin\client\wmpnetwork.obj
+\VODDev\bin\client\wmpplayer4.obj
+\VODDev\bin\client\wmpplayerapplication.obj
+\VODDev\bin\client\wmpplaylist.obj
+\VODDev\bin\client\wmpplaylistarray.obj
+\VODDev\bin\client\wmpplaylistcollection.obj
+\VODDev\bin\client\wmpsettings.obj
+\VODDev\bin\client\wmpstringcollection.obj
+\VODDev\bin\client\VODClient.res
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPC.tmp"
+<h3>Output Window</h3>
+Compiling...
+VODClient.cpp
+Linking...
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE.tmp" with contents
+[
+/nologo /o"../../bin/client/VODClient.bsc" 
+\VODDev\bin\client\StdAfx.sbr
+\VODDev\bin\client\ClientSocket.sbr
+\VODDev\bin\client\DlgLogin.sbr
+\VODDev\bin\client\MainFrm.sbr
+\VODDev\bin\client\scbarg.sbr
+\VODDev\bin\client\sizecbar.sbr
+\VODDev\bin\client\VODClient.sbr
+\VODDev\bin\client\VODClientDoc.sbr
+\VODDev\bin\client\VODClientView.sbr
+\VODDev\bin\client\wmpcdrom.sbr
+\VODDev\bin\client\wmpcdromcollection.sbr
+\VODDev\bin\client\wmpclosedcaption.sbr
+\VODDev\bin\client\wmpcontrols.sbr
+\VODDev\bin\client\wmpdvd.sbr
+\VODDev\bin\client\wmperror.sbr
+\VODDev\bin\client\wmperroritem.sbr
+\VODDev\bin\client\wmpmedia.sbr
+\VODDev\bin\client\wmpmediacollection.sbr
+\VODDev\bin\client\wmpnetwork.sbr
+\VODDev\bin\client\wmpplayer4.sbr
+\VODDev\bin\client\wmpplayerapplication.sbr
+\VODDev\bin\client\wmpplaylist.sbr
+\VODDev\bin\client\wmpplaylistarray.sbr
+\VODDev\bin\client\wmpplaylistcollection.sbr
+\VODDev\bin\client\wmpsettings.sbr
+\VODDev\bin\client\wmpstringcollection.sbr]
+Creating command line "bscmake.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+VODClient.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,101 @@
+一 使用记录集的方式执行增、删和修改操作
+   1 添加新记录
+     1.1 获取表的数据到记录集
+     1.2 在记录集中添加一条新的记录
+         AddNew()
+     1.3 设置该记录每个字段的值
+         SetFieldValue()
+     1.4 记录集的数据更新到数据库
+         Update()
+     1.5 重新在列表控件中显示
+                 
+   2 删除记录
+     2.1 获取表的数据到记录集
+     2.2 将记录集的指针移动到要删除的记录
+         MoveLast()
+     2.3 执行删除操作
+         Delete()
+     2.4 记录集的数据更新到数据库
+         Update()
+     2.5 重新在列表控件中显示         
+   3 修改记录
+     3.1 获取表的数据到记录集
+     3.2 将指针移动到要修改的记录
+         MoveLast()
+     3.3 修改该记录每个字段的值
+         SetFieldValue()
+     3.4 更新到数据库
+         Update()
+     3.5 重新在列表控件中显示         
+              
+二 使用Sql语句的方式执行增、删和修改操作
+   1 Connection接口的Execute()函数
+     Execute ( 
+     _bstr_t CommandText,//Sql语句 
+     VARIANT * RecordsAffected, //影响的记录的数量
+     long Options// adCmdText
+      );
+     多使用它完成增、删和修改的操作。
+      
+   2 Recordset接口的Open()函数  
+     多使用它完成查询操作。
+三 事务处理
+   1 Connection接口提供了事务处理的操作
+     BeginTrans()-启动事务
+     CommitTrans()-执行事务
+     RollbackTrans()-回滚事务
+四 如何管理图片、视频数据？
+   通常在数据库中保存图片、视频的文件路径。
+--------------------------------
+第四部分 windows平台下的网络通信编程
+一 介绍
+1 使用基本的socket函数
+2 使用以WSA开头的socket函数，结合了windows平台的
+  特性。
+3 MFC的socket类，部分的封装了以WSA开头的socket函数
+二 socket库的介绍
+   vc6.0 包含了1.1版本的socket库。另外，在xp系统
+   自带了2.2版本的socket库。
+   1 2.2版本库的相关文件：
+     dll文件：ws2_32.dll
+     lib文件：ws2_32.lib
+     头文件： winsock2.h
+   2 socket库的初始化
+     2.1 WSAStartup(),初始化函数
+     2.2 WSACleanup(),卸载socket库
+   3 TCP通信
+     3.1 TCP 服务器
+     3.1.1 创建套接字
+     3.1.2 绑定地址和端口
+     3.1.3 监听
+     3.1.4 接收客户端连接
+     3.1.5 数据收发
+     3.1.6 关闭套接字
+     在dos窗口下，输入netstat -an命令，查看网路
+     的端口状态。
+     3.2 TCP 客户端
+     3.2.1 创建套接字
+     3.2.2 连接服务器  inet_addr("127.0.0.1");
+     3.2.3 数据收发  send
+     3.2.4 关闭套接字
+  
+   4 UDP通信
+   4.1 UDP的服务器
+   4.1.1 创建socket
+   4.1.2 绑定地址和端口
+   4.1.3 数据收发  recvfrom
+   4.1.4 关闭socket
+   
+   4.2 UDP的客户端
+   4.2.1 创建socket
+   4.2.2 数据收发 sendto
+   4.2.3 关闭socket
+      
+   1 大数据的接收和发送如何解决？
+   2 简单的文件传输  
+  
+     
+        
+           
+      
+   

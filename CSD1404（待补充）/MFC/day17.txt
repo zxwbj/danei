@@ -1,0 +1,135 @@
+一 使用MFC的Socket类实现简单的文件传输
+  1 相关类
+  CAsyncSocket类-异步socket类。
+  CSocket类-父类是CAsyncSocket类，同步socket类。
+  2 使用
+  2.1 文件传输的服务器端
+      2.1.1 添加用于文件传输的socket类，继承自
+            CAsyncSocket类。
+      2.1.2 在对话框中调用业务逻辑类        
+  2.2 文件传输的客户端
+二 FeiQ的例子
+ 1 功能分析
+   1.1 上线
+   1.2 下线
+   1.3 聊天
+   1.4 文件传输
+   1.5 掉线检测
+ 2 工程中类的介绍
+   2.1 界面类
+   2.1.1 CMainFrame类-主框架窗口
+   2.1.2 CUserView类-用户列表视图 
+   2.1.3 CChatView类-聊天视图
+   2.1.4 CFileSendDlg类-发送文件对话框
+   2.1.5 CFileRecvDlg类-接收文件对话框
+   2.2 业务逻辑类
+   2.2.1 CUserServer类-UDP服务器
+   2.2.2 CUsetClient类-UDP客户端
+   2.2.3 CFileServer类-TCP服务器
+   2.2.4 CFileClient类-TCP客户端
+   2.3 其它
+   2.3.1 CFeiQApp类-应用程序类
+   2.3.2 CFileThread类-用户界面子线程的线程类
+   2.3.3 一系列以_tag为前缀的结构体-封装在客户端
+         与服务器之间传递的数据。  
+ 3 程序的执行过程
+ 3.1 用户上线的执行过程
+   3.1.1 在CMainFrame的OnCreate()函数中，调用
+   Initialize()函数。
+   CMainFrame::Initialize( )
+   {
+     // 1 UDP服务器的初始化
+     m_UserServer.InitServer( );
+     {
+        //1.1 创建、绑定，创建和启动子线程用于
+        数据的收发。
+        //1.2 子线程的线程函数
+        UserThread( LPVOID pParam )
+        {
+           //接收客户端发送的数据...
+           recvfrom(...);
+           switch(nCmdID)
+           {
+             case 广播:
+                  OnUserbroadcast();
+                  {
+                     // 1 在用户列表视图中添加
+                     用户信息
+                     m_pUserView->AddUser(...);
+                     // 2 将用户的IP添加到组合框
+                     控件中
+                     m_pChatView->AddUser(...);
+                  }
+             case 退出:
+                  OnUserQuit();
+             case 聊天: 
+                  OnUserChat();
+           }
+        }
+     }
+     // 2 UDP客户端的初始化 
+     m_UserClient.InitClient( );
+     {
+       //2.1 创建客户端socket
+       //2.2 将它设置为广播模式
+       setsockopt(...); 
+     }
+     // 3 TCP服务器的初始化 
+     m_FileServer.InitServer( );
+     
+     // 4 客户端广播
+     m_UserClient.Broadcast( );
+     {
+        SendData( ...);
+        {
+          //客户端发送数据，在服务器端的
+          //线程函数中，recvfrom 接收广播数据。
+          sendto( m_ClientSocket,...);
+        }
+     }
+     // 5 设置和启动定时器。
+     SetTimer( 1, 1000 * 10, NULL );
+   }
+3.2 掉线检测(通常通过发送心跳数据完成该功能)
+   3.2.1 每隔10秒，执行一次OnTimer()函数，发送
+   一次广播数据
+    CMainFrame::OnTimer()
+    {
+      m_UserClient.Broadcast( );
+    }
+    作为对Broadcast()的响应，服务器端调用
+    OnUserbroadcast()，将每个数据项附加数据设置
+    为1；
+    {
+      m_pUserView->AddUser(...);
+      {
+          theCtrl.SetItemData( nItem, 1 );
+      }
+    }
+  3.2.2 每隔20秒，调用CUserView::OnTimer函数,
+  如果数据项的附加数据为1，将它设置为0.如果
+  为0，则删除该项。
+  void CUserView::OnTimer(UINT nIDEvent)
+  {
+        DWORD nData = theCtrl.GetItemData( nItem );
+        //判断HeartBeat数值
+        if( nData > 0 )
+        {   //清空HeartBeat数值
+            theCtrl.SetItemData( nItem, 0 );
+        }
+        else
+        {   //删除项
+            theCtrl.DeleteItem( nItem );
+        }
+  }  
+  正常情况：
+  附加数据值：1 0 1 0 1 0 1 0 1 0 1...
+  异常情况：
+  附加数据值：1 0 1 0 1 0 删除  
+课堂作业：创建基于对话框的应用程序，使用UDP的
+广播完成用户的上线功能。  
+          
+   
+    
+   
+         

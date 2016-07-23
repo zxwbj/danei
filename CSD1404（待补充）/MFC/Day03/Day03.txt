@@ -1,0 +1,92 @@
+一 消息映射机制（3）
+  1 消息映射机制的使用
+    类必须派生自CCmdTarget
+    类内必须添加声明宏  DECLARE_MESSAGE_MAP()
+    类外必须添加实现宏 
+             BEGIN_MESSAGE_MAP( theClass， baseClass )
+             END_MESSAGE_MAP( ) 
+  2 消息映射机制的实现
+   2.1 数据结构
+     struct AFX_MSGMAP_ENTRY (静态数组每个元素的类型)
+     {
+	UINT nMessage;   // 消息ID
+	UINT nCode;      // 通知码
+	UINT nID;        // 命令ID、控件ID
+	UINT nLastID;    // 最后一个控件ID
+	UINT nSig;       // 消息处理函数类型
+	AFX_PMSG pfn;    // 消息处理函数的指针（地址）
+     };
+     struct AFX_MSGMAP （静态变量的类型）
+     {
+	const AFX_MSGMAP* pBaseMap;  //保存父类静态变量地址
+	const AFX_MSGMAP_ENTRY* lpEntries;
+                                    //保存本类静态数组首地址
+     };
+   2.2 宏展开的代码
+       见代码
+   2.3 宏展开各部分的作用
+      _messageEntries[] - 静态数组
+           数组中每个元素保存了  消息ID 和 处理消息函数的地址
+      messageMap - 静态变量
+           保存父类静态变量地址（负责连接链表）
+           保存本类静态数组首地址
+      GetMessageMap() - 虚函数
+           获取本类静态变量地址（获取链表头节点）
+   2.4 关系
+      GetMessageMap()
+         |->&CMyFrameWnd::messageMap
+               |->&CMyFrameWnd::_messageEntries
+                     |->消息ID....处理函数
+                     ..............
+               |->&CFrameWnd::messageMap
+                     |->&CFrameWnd::_messageEntries
+                           |->消息ID....处理函数
+                           ...........
+                     |->&CWnd::messageMap
+                           |->&CWnd::_messageEntries
+                                 |->消息ID....处理函数
+                                 ..........
+                           |->&CCmdTarget::messageMap
+                                 |->&CCmdTarget::_messageEntries
+                                       |->消息ID....处理函数
+                                       ..........
+                                 |->NULL
+三 执行过程
+   1 获取和窗口句柄绑定在一起框架类对象 pFrame
+   2 利用pFrame调用宏展开的虚函数GetMessageMap获取本类静态变量
+     地址（链表头节点）pMessageMap
+   3 利用pMessageMap（静态变量）的第二个成员获取相应类静态数组，
+     并到数组中匹配查找 消息ID和对应的处理函数，如果找到了执行5.
+   4 如果没找到，pMessageMap的第一个成员获取父类静态变量地址，
+     如果为NULL，结束查找，如果不为NULL 执行3.
+   5 利用找到的数组元素的第六个成员保存到函数地址，并调用之，完成
+     消息的处理。
+四 MFC消息分类
+   1 windows的标准消息（例如：键盘/鼠标/定时器...）
+     ON_WM_XXX
+   2 自定义消息
+     #define WM_MYMESSAGE WM_USER+n
+     ON_MESSAGE
+   3 命令消息（WM_COMMAND）
+     ON_COMMAND
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

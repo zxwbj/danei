@@ -1,0 +1,20 @@
+#include <stdio.h>
+exec sql include sqlca;
+exec sql include oraca;
+exec oracle  option(oraca=yes);
+int main(){
+    exec sql begin declare section;
+		   char userpasswd[30]="openlab/open123";
+		   int  var_id=10;
+			 char var_name[30];
+		exec sql end   declare section;
+		oraca.orastxtf=3;
+    exec sql connect:userpasswd;
+    exec sql select first_name 
+				into :var_name 
+				from  s_emp  where id=:var_id;
+    printf("sqlstr=%s\n",
+						oraca.orastxt.orastxtc);
+		exec  sql commit work release;
+}
+

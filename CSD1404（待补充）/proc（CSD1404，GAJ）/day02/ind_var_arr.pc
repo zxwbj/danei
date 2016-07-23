@@ -1,0 +1,27 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql begin declare section;
+		    char userpasswd[30]="openlab/open123";
+		    int   ids[50];
+				char  names[50][30];
+				short indnames[50];
+				int   mids[50];
+				short indmids[50];
+		exec sql end   declare section;
+    exec sql connect:userpasswd;
+        
+    exec sql select  id,first_name,manager_id
+				into :ids,:names:indnames,
+				:mids:indmids from  s_emp;
+
+		int   i=0;
+		/* sqlca.sqlerrd[2] 可以获取sql 语句 影响的行数  */
+    for(i=0;i<sqlca.sqlerrd[2];i++){
+		    printf("id=%d,name=%s indname=%hd,mid=%d indmid=%hd\n",
+				ids[i],names[i],indnames[i],
+				mids[i],indmids[i]);
+		}
+		exec sql commit work release;
+}
+

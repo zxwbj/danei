@@ -1,0 +1,223 @@
+  Oracle数据库 - C++应用程序基本都是使用数据库做数据的存储，嵌入式应用程序慢慢的也在使用数据库。
+  数据库是一个程序员必备的基本功。数据库是比较简单的技术，只要记SQL语句基本上就可以了。
+  学习方法： 每天SQL语句看一遍，敲三遍。
+  数据库(Database/DB)的知识点：
+   1 SQL(结构化查询语言)语句 - 查询、增删改、事务处理、建立/删除各种结构(以表为主)、授权语句(DBA)
+   2 PL SQL - Oracle特有，通用性不是特别的好。
+   3 pro*c - 程序员用程序执行SQL语句
+  靠谱点的项目： UC+QT+数据库
+  数据可以存储在以下三种位置：
+    1 内存 - 内存中的数据操作起来最快，但一旦关机，内存中的数据将消失，因此持久保存数据不能选择内存，但进程的数据都来自于内存。文件、数据库中的数据需要加载到内存中才能使用。
+    2 文件 - 可以持久保存数据，所有的操作系统都支持文件，数据存入文件的速度比存入数据库要快。文件的弱点在于对数据本身没有太多的支持，查询、汇总数据时没有太多的支持，不方便。
+    3 数据库 - 可以持久保存数据，数据库的数据也是存在文件中的，可以认为数据库是一种特殊的文件。数据库是专门为存储数据设计的，对数据本身的操作有很大的支持，SQL语句可以对数据进行完整的功能操作(增删改查)。
+
+   95%的应用程序都是建立在数据库的基础上的。
+   几个英文：
+     data - 数据
+     database - 数据库
+     DBA - 数据库管理员，大型数据库都有DBA
+     DBMS - 数据库管理系统
+     RDB - 关系型数据库，主流的数据库都是关系型的
+     RDBMS - 关系型数据库管理系统
+   常见的数据库：
+    Oracle - ORACLE(甲骨文)公司的主打产品，市场占有率最大的数据库。
+    DB2 - IBM(国际商用机器)公司的数据库，在中国很多的政府机构的数据库都是DB2。
+    SQL Server - 微软公司的产品，微软体系多半使用SQL Server，微软体系就是 .NET / MFC。
+    mysql - 免费数据库，很多中小型公司都在使用。Oralce公司目前持有mysql。
+   ......
+  所有这些数据库都支持SQL语句。SQL语句是数据库的行业规范。
+   目前主流的数据库都是关系型数据库，特点就是数据存在表(table)中，关系也在表中体现。  
+   SQL的分类：
+    1 Select 查询语句，以select关键字开头
+    2 DML语句(数据操作语言)，包括 增删改 数据。
+    3 DDL 语句(数据定义语言)，包括 建表、删表等。
+    4 事务处理语句，包括提交事务(确认)和回滚事务(取消)
+    5 DCL语句(数据控制语句)，主要包括授权等(不重要)。
+   主要掌握前4种，DCL程序员较少使用。
+   数据库的基本概念： 表，记录和字段。
+      见图
+   SQL语句不区分大小写，除了  ""中和''中。
+  执行SQL语句使用SQL plus工具，商业公司会有专门的图形化的工具，数据库采用远程登录的方式访问。
+  telnet 192.168.0.23      / 20 、23 、26 都可以
+  用户名： openlab
+  密码： open123
+  敲 sqlplus 启动工具，再输入一遍用户名和密码即可。
+  用户名和密码和上面一样。
+   进入后就可以执行SQL语句。
+  两个常用的sql语句：
+   desc 表名; - 查看表结构(看表头，看字段)
+   select * from 表名; - 查看表中所有数据
+   有两个常用表：s_emp - 员工表  s_dept - 部门表
+   desc s_emp;
+   select * from s_emp;
+   表由字段组成，字段有常见的类型，包括：
+    number - 数值型，包括整数和小数。
+           number(10) 就是长度是10的整数
+           number(10,2) 就是长度是10，小数点留2位的小数
+    char或varchar2 - 字符串类型，文本。用法一样，都是
+           varchar2(长度) 。区别在于  char 是定长字符串， 
+           varchar2是变长字符串。比如：
+           char(10) 长度恒定是10，不足的补空格
+           varchar2(10)长度不确定，输入多少就多长，不补
+           char的效率稍高，但浪费空间。
+    date - 日期类型的字段用date。
+   select查询语句至少需要以下两个子句：
+   SELECT 各种字段，表达式 - 后面放要查的内容,中间,隔开
+   FROM 表名/视图名/子查询 - 数据来源
+   select *    -  查询所有字段
+   from s_emp - 从s_emp表中
+   select id,first_name,salary from s_emp;
+   练习：
+     从员工表中查询员工last_name、职位和入职时间
+   select last_name,title,start_date from s_emp;
+   sql语句支持算数运算符：+ - * /
+   查看员工id，first_name和年薪
+   select id,first_name,salary*12 from s_emp;
+   字段名、表达式都可以用别名简化，别名的用法：就是在字段名或表达式后面空格，然后再写上别名即可。
+   select id,first_name,salary*12 income 
+   from s_emp;
+ 
+   sql语句中的文本和日期类型
+     sql语句中，文本和日期类型的字面值都必须用' '括起来，比如：'abc'，' '。文本类型的数据区分大小写。
+     拼接字符串用 || ，比如：'abc' || 'def' 等于'abcdef'。
+   练习: 
+    查询s_emp表中的id和名字，名字要求：first_name后面加个空格拼接上last_name，并且在显示时，数据头显示为name。
+    select id,first_name||' '||last_name name
+    from s_emp;
+    select id,first_name||' '||last_name "Emp Name"
+    from s_emp;
+    别名中如果包含空格，或者大小写不被改变，可以用""把别名括起来。
+    关于空值 - 数据放入数据库时，有些字段可能不填写数据，这些不填的数据就用空值。
+    有一些字段是不允许空值的，但大多数的字段都允许。
+    字段有可能是 number、varchar2、date，但都对应空值。
+     空值可以匹配任意的类型。
+     算术运算如果有空值参与，结果是空值；文本型的有空值参与，效果等价于''。
+     select id,first_name,salary,commission_pct 
+     from s_emp;
+     查询员工的月收入，包括薪水和奖金。
+     select id,first_name,
+      salary*(1+commission_pct/100) income
+     from s_emp;
+     在很多的算数运算中，对空值要进行处理，否则结果就空值。函数nvl()专门用于处理空值。
+    nvl(可能为空值的字段或表达式，如果为空替换值)
+    select id,first_name,
+      salary*(1+nvl(commission_pct,0)/100) income
+    from s_emp;
+    查看员工表中都有哪些部门ID？
+    select dept_id from s_emp;
+    重复的查询结果用distinct可以合并。
+    select distinct dept_id from s_emp;
+    select distinct id,dept_id from s_emp;
+    所谓的重复查询结果是 所有字段都一样才算。
+   
+   查询部门编号是41所有员工的id，名字、工资和部门编号
+   90%以上的查询都是条件查询，条件查询需要加入where子句。
+   select 字段名、表达式
+   from 表名、视图名、子查询
+   where 查询条件;
+   select id,first_name,salary,dept_id 
+   from s_emp 
+   where dept_id=41;
+   SQL练习：
+    查询mark的员工的id，first_name,工资和职位。
+    select id,first_name,salary,title 
+    from s_emp
+    where first_name='Mark';
+
+  查询条件中的运算符：
+    1 比较运算符  =   >   >=    <    <=     !=   <>
+    2 SQL中提供的比较运算符
+      between ... and ...  - 在两者之间，前后都包含(双闭)
+      in (值1,值2,值3...)  -  等于 这些值 其中的一个
+      like '格式字符串'  -  像 格式字符串 一样(匹配)
+      is null - 和空值 做比较
+    3 逻辑运算符
+      and   并且
+      or      或者
+      not    非
+   SQL练习：     
+     打印工资超过1500(包括)的员工 id，名字和薪水。
+    select id,first_name,salary from s_emp 
+    where salary >= 1500;
+    查询工资在1450到2500之间的员工信息，包括id，名字和薪水。
+     select id,first_name,salary from s_emp
+     where salary between 1450 and 2500;
+
+     select id,first_name,salary from s_emp
+     where salary between 2500 and 1450;
+  注： 保证前小 后大 才有 查询结果。 
+
+    SQL练习： 查询部门编号是41或者31或33的员工信息，包括：id，名字，薪水和部门编号。
+    select id,first_name,salary,dept_id from s_emp
+    where dept_id in (41,31,33);
+   练习：查询部门编号不是41或者31或33的员工信息
+    select id,first_name,salary,dept_id from s_emp
+    where dept_id not in (41,31,33);
+   注： not in 的效率极低，没事少用。
+
+    like运算符的用法
+     like '格式字符串' 
+     在格式字符串中，可以用 _ 代表任意一个字符，用%代表任意0-n个字符。
+      like '%a_'  -  倒数第二个是a，最少2位。
+    练习： 用like查询所有first_name中包括a的员工信息，包括id，名字和薪水。
+     select id,first_name,salary from s_emp
+     where first_name like '%a%';
+
+   与空值做比较 =  !=  <> 都是不好用的。得用is NULL 或
+   is not NULL。
+   select id,first_name,salary,commission_pct 
+   from s_emp
+   where commission_pct = NULL;
+   select id,first_name,salary,commission_pct 
+   from s_emp
+   where commission_pct != NULL;
+   select id,first_name,salary,commission_pct 
+   from s_emp
+   where commission_pct is NULL;
+   select id,first_name,salary,commission_pct 
+   from s_emp
+   where commission_pct is not NULL;
+
+  查询部门编号是41并且工资超过1400(不包括1400)的所有员工信息，包括id，名字，薪水和部门id。
+   select id,first_name,salary,dept_id from s_emp
+   where dept_id=41 and salary>1400;
+  SQL练习： 
+   查询部门编号是41或者工资超过1400的所有员工信息。
+   select id,first_name,salary,dept_id from s_emp
+   where dept_id=41 or salary>1400;
+
+  并且 需要所有条件都成立，或者 就是只成立一个条件就可以。
+  注： and 和 or 优先级是不同的，and的优先级高于or，比如：
+    a or b and c  等价于 a or (b and c)
+    2 + 3 * 4           ==   2 + (3*4)
+  如果想先算or，用 () 括起来。
+
+  SQL练习：
+     查询所有first_name中包括an的员工信息，包括：id，名字和薪水。
+   select id,first_name,salary from s_emp
+   where first_name like '%an%' or 
+   first_name like '%An%';
+    全面忽略大小写的查询？ - 借助字符函数实现
+
+ order by 子句可以对查询结果进行排序(按字段/表达式/别名)，排序分两种： 升序(从小到大)和降序(从大到小)。
+ order by 放在SQL语句的最后面 就可以了。
+  select id,first_name,salary from s_emp
+  order by salary;
+  升序在排序的字段/别名后面写一个asc，但一般不需要写，因为默认就是升序；降序在排序的字段/别名后面跟 desc
+  select id,first_name,salary from s_emp
+  order by salary desc;
+  select id,first_name,salary s from s_emp -- 别名排序
+  order by s; 
+  select id,first_name,salary from s_emp
+  order by 2;  -- 可以select后面的位置排序，从1开始
+ order by 数字不推荐，因为前面如果加上一个字段数字就错位了。
+  order by 可以按照多字段排序，分主排序字段和辅助排序字段，如果主排序字段相同，就使用第二字段。当多字段排序时，每个字段的升序和降序要在排序字段后面单独指定。
+   select id,first_name,salary from s_emp
+   order by salary,id;
+   select id,first_name,salary from s_emp
+   order by salary,id desc;
+   select id,first_name,salary from s_emp
+   order by salary desc,id desc;  -- 双降序
+
+  作业：每个SQL 先看1遍，敲5遍。
+

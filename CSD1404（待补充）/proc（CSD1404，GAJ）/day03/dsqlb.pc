@@ -1,0 +1,23 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql begin declare section;
+		    char userpasswd[30]="openlab/open123";
+		    char sqlstr[100];
+				int  id=101;
+				char name[30]="test101";
+		exec sql end   declare section;
+		exec sql connect:userpasswd;
+		sprintf(sqlstr,"%s",
+	"insert into testprocdsql values(:b0,:b1)");
+	  exec sql prepare s from :sqlstr; 
+		exec sql execute s using :id,:name;
+    if(!sqlca.sqlcode){
+		    printf("insert  data  success!\n");
+				exec sql commit;
+		}else{
+		    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+		}
+		exec sql commit work release;
+}
+

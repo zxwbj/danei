@@ -1,0 +1,158 @@
+一.多态的底层实现
+   虚函数  加了virtual修饰的成员函数
+   虚函数表指针
+       一个类型只要虚函数 则这个类型就有一张
+           虚函数表。
+       同类型的对象共享一张虚函数表。
+
+   虚函数表
+       每个元素都是虚函数的地址。
+
+
+   当父类型指针 指向子类对象时  先根据对象地址
+   中的前四个字节 找到虚函数表的地址,然后根据
+   虚函数表地址 找到对应的虚函数地址。再根据
+   虚函数的地址 找到对应的实现。
+
+   思考能不能取得虚表  
+   然后调用虚表中的函数?
+
+
+二.运行时 类型识别
+   2.1  typeid   获取类型信息的
+       type_info
+       name()
+       ==
+       !=
+   2.2 动态类型转换
+       dynamic_cast<类型*>(对象)
+       如果成功 就返回非NULL指针
+       如果失败 就返回NULL指针
+
+三.动态绑定 和 静态绑定
+   class Animal {
+      public:
+      virtual  void  fun(){
+      
+      }
+      void   show(){  }
+   }; 
+   class  Dog:public Animal{ 
+      public:
+      void fun(){ // dog实现 
+      }
+   };
+   class  Cat:public Animal{  
+      public:
+      void fun(){ // cat实现 
+      }
+   };
+
+   int main(){
+       Dog   dog;
+       dog.fun();
+       Animal  *pa;
+       int  x;
+       cin >> x;
+       if(0==x){
+          pa=new Dog();
+       }else{
+          pa=new Cat();
+       }
+       pa->fun();
+   }
+
+四.抽象类 
+   4.1  不能创建对象的类 称之为抽象类。
+      抽象类除了不能实例化之外 和其它类没有
+      任何区别。
+   4.2 只要在一个类中出现 纯虚函数 则这个类
+      自动成为抽象类。
+      class Animal{
+          public:
+	  virtual  void show()=0;
+      };
+
+   4.3 子类需要实现纯虚函数  否则子类自动成为
+      抽象类。
+   4.4 除了构造 析构之外 如果一个类的函数 都
+      是纯虚函数 则这个类称之为纯抽象类。
+                               
+五.虚析构函数 
+   Animal  *pa=new Dog();
+   delete   pa;
+   当父类型中 有虚函数时  建议把析构函数也设置
+   成虚函数。
+
+
+六.c++ 中的异常处理
+   6.1 异常就是一种全新的错误表达方式。
+       exception 
+   6.2 可以使用返回值 表达错误
+
+   6.3 可以使用异常表达非正常的信息 
+       有异常抛出的情况下,如果程序采用默认处理
+       方式，调用terminate 终止程序。 
+   6.4 异常的说明 
+       void  foo()throw(int){
+       
+       }
+       void  foo()throw(int,double){
+       
+       }
+       /* 可能会抛出任何异常 */
+       void  foo(){
+       
+       }
+       /* 不抛出任何异常 */
+       void  foo()throw(){
+       
+       }
+   6.5 系统提供的异常 
+      exception  
+
+      内存分配 
+          malloc();
+      bad_alloc
+      out_of_range
+
+
+   6.6 用户自定义异常 
+      1.定义异常 
+        写异常类 代表不同的问题
+      2.根据条件 抛出异常
+        throw  异常;
+      3.捕获异常
+        try{
+	
+	}catch(){
+	
+	}
+      4.处理异常
+
+
+七.c++ string 的使用 
+   构造函数:
+   string();
+   /* 可以使用c 字符串 构建c++ 字符串 */
+   string(const char*);
+   string(const string& str)
+   
+
+   string   abc="hello";
+   string   abc("hello");
+
+   运算符重载:
+   ==
+   >  <
+   + 
+   +=
+   = 
+   []
+
+
+
+   
+
+
+    
